@@ -1,10 +1,9 @@
 import React from 'react'
-import Carousel from '../components/carousel'
-import Navbar from '../components/navbar'
+import Carousel from '../Class/carousel'
+import Navbar from '../Class/navbar'
 import '../App.css';
 import Image1 from '../images/Image1.jpg'
 import Image2 from '../images/Image2.jpg'
-import Image3 from '../images/Image3.jpg'
 
 
 
@@ -12,7 +11,7 @@ const HomePage = () => {
     const images = [
         Image1,
         Image2,
-        Image3
+      
     ];
 
     const login = () => {
