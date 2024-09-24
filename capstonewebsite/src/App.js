@@ -11,7 +11,7 @@ function App() {
   return (
     <Router>
       <div className="App">
-        <Switch>
+        <Switch>     
           <Route exact path="/">
             <HomePage />
           </Route>

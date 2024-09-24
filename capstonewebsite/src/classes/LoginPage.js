@@ -88,7 +88,7 @@ const LoginPage = () => {
                                     <a href='/'>Forgot Password?</a>
                                 </div>
                                 <div className='z-50 relative'>
-                                    <button
+                                    <button    
                                         onClick={dashboard}
                                         className='z-30 hover:scale-110 transform transition-all duration-200 tracking-widest mt-2 drop-shadow-lg bg-gradient-to-tr from-[#FCC429] to-[#E5603D] text-[25pxp] font-bold px-12 py-3 rounded-2xl'
                                     >

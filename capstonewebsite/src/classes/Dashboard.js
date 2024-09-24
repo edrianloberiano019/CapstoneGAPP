@@ -6,7 +6,7 @@ const App = () => {
 
   const toggleDropdown = (dropdown) => {
     setOpenDropdown(openDropdown === dropdown ? null : dropdown);
-  };
+  };    
  
   return (
     <div>

@@ -20,7 +20,7 @@ const HomePage = () => {
 
     return (
         <div>
-            <div className='z-10'>
+            <div className='z-10'>    
             </div>
             <div className="w-full h-screen">
                 <Carousel images={images} interval={3000} />
