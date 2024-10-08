@@ -3,6 +3,7 @@ import Carousel from '../Class/carousel'
 import Navbar from '../Class/navbar'
 import '../App.css';
 import Image1 from '../images/Image1.jpg'
+import { useNavigate } from 'react-router-dom';
 import Image2 from '../images/Image2.jpg'
 
 
@@ -14,8 +15,11 @@ const HomePage = () => {
       
     ];
 
+    const navigate = useNavigate();
+
+
     const login = () => {
-        window.location.href = "/login";
+        navigate('/Loginpage')
     };
 
     return (

@@ -4,38 +4,75 @@ import Navbar from '../Class/navbar';
 import '../App.css';
 import Image1 from '../images/Image1.jpg';
 import Image2 from '../images/Image2.jpg';
+import { useNavigate } from 'react-router-dom';
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from '../firebase';
+
+
+import { doc, getDoc } from "firebase/firestore";
+import { db } from '../firebase';
+
+import { toast } from "react-toastify";
 
 const LoginPage = () => {
+    const navigate = useNavigate();
     const images = [
         Image1,
         Image2,
     ];
+    const getUserRole = async (uid) => {
+        const userDoc = doc(db, "users", uid);
+        const userSnap = await getDoc(userDoc);
+        if (userSnap.exists()) {
+            return userSnap.data().role;
+        }
+        return null;
+    };
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [errorMessage, setErrorMessage] = useState('');
+    // const [errorMessage, setErrorMessage] = useState('');
 
-    const dashboard = () => {
-        if (validateInputs()) {
-            window.location.href = "/dashboard";
+
+    const handleLogin = async (e) => {
+        e.preventDefault();
+
+        try {
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+
+            const userRole = await getUserRole(user.uid);
+            if (userRole === 'admin') {
+                navigate('/admin');
+            } else if (userRole === 'educator') {
+                navigate('/educator');
+            } else if (userRole === 'student') {
+                toast.warning("Student accounts are not allowed to access to this portal.",{
+                    position: "top-center",
+                    autoClose: 5000, 
+                    hideProgressBar: false,
+                    closeOnClick: false,
+                    pauseOnHover: true,
+                    style: {
+                        color: 'black',
+                    }
+                })
+            } else {
+                toast.error("The Email or password is incorrect.", {
+                    position: "top-center"
+                });
+            }
+        } catch (error) {
+            toast.error("Email or password is incorrect.", {
+                position: "top-center"
+            });
         }
     };
 
-    const validateInputs = () => {
-        const emailRegex = /^[a-zA-Z0-9]+$/;
-        const passwordRegex = /^[a-zA-Z0-9]+$/;
-
-        if (!emailRegex.test(email)) {
-            setErrorMessage('Username or Email can only contain letters, numbers.');
-            return false;
-        }
-        if (!passwordRegex.test(password)) {
-            setErrorMessage('Password can only contain letters and numbers.');
-            return false;
-        }
-        setErrorMessage('');
-        return true;
-    };
+    // const example = async (e) => {
+    //     e.preventDefault()
+    //     navigate('/educator')
+    // }
 
     return (
         <div>
@@ -49,7 +86,7 @@ const LoginPage = () => {
                     <Navbar />
                     <div className='flex justify-center items-center mt-48'>
                         <div className='flex w-[400px] px-10 pt-16 pb-24 rounded-2xl justify-center items-center text-center bg-gradient-to-tr from-[#68F276] to-[#1DD32F] login'>
-                            <div className='w-full'>
+                            <form onSubmit={handleLogin} className='w-full'>
                                 <div className='text-7xl lvl' style={{
                                     backgroundImage: 'linear-gradient(to right, #fccf46, #ee5343)',
                                     WebkitBackgroundClip: 'text',
@@ -79,23 +116,17 @@ const LoginPage = () => {
                                         <button className='flex px-2 h-full justify-center items-center'>show</button>
                                     </div>
                                 </div>
-                                {errorMessage && (
-                                    <div className='text-red-500 mt-2'>
-                                        {errorMessage}
-                                    </div>
-                                )}
                                 <div className='flex justify-end mr-7'>
                                     <a href='/'>Forgot Password?</a>
                                 </div>
                                 <div className='z-50 relative'>
-                                    <button
-                                        onClick={dashboard}
+                                    <button type='submit'
                                         className='z-30 hover:scale-110 transform transition-all duration-200 tracking-widest mt-2 drop-shadow-lg bg-gradient-to-tr from-[#FCC429] to-[#E5603D] text-[25pxp] font-bold px-12 py-3 rounded-2xl'
                                     >
                                         Login
                                     </button>
                                 </div>
-                            </div>
+                            </form>
                         </div>
                     </div>
                 </div>
