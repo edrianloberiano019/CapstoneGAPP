@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
 import characterOne from '../images/ch1.png'
-import backgroundImage from '../images/bg1.png'
+import backgroundImage from '../images/bg.jpg'
 import { auth, db } from '../firebase';
 import { setDoc, doc } from "firebase/firestore";
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { toast } from "react-toastify";
-import Loading from './Loading';
+import {motion} from 'framer-motion'
 
 function StudentRegistration() {
     const [FirstName, setFName] = useState("");
@@ -26,7 +26,6 @@ function StudentRegistration() {
     const [telephone, setTelephone] = useState('');
     const [password, setPasswords] = useState('')
     const [status] = useState("student");
-    const [loading, setLoading] = useState(true);
     const [Gtelephone, setTelephone2] = useState('');
 
 
@@ -117,7 +116,11 @@ function StudentRegistration() {
 
 
     return (
-        <div className='w-full'>
+        <motion.div className='w-full'
+            initial={{ opacity: 0, x: 100 }}  
+            animate={{ opacity: 1, x: 0 }}   
+            transition={{ duratiom: 0.2 }} 
+        >
             <div className=' flex w-full overflow-hidden rounded-lg' style={appStyle}>
                 <div className='flex p-6  bg-[#00712d9c]  w-full'>
 
@@ -266,7 +269,7 @@ function StudentRegistration() {
 
                 </div>
             </div>
-        </div>
+        </motion.div>
     )
 }
 

@@ -4,7 +4,9 @@ import { auth, db } from '../firebase';
 import { setDoc, doc } from "firebase/firestore";
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { toast } from "react-toastify";
-import Loading from './Loading';
+import { motion } from 'framer-motion';
+import backgroundImage from '../images/bg.jpg'
+
 
 function StudentRegistration() {
     const [FirstName, setFName] = useState("");
@@ -26,7 +28,6 @@ function StudentRegistration() {
     const [status] = useState("educator");
     const [password, setPasswords] = useState('')
     const [Gtelephone, setTelephone2] = useState('');
-    const [loading, setLoading] = useState(true);
 
 
     const handleTelephoneChange = (e) => {
@@ -40,6 +41,9 @@ function StudentRegistration() {
         setTelephone2(value);
         setGPhone(value);
     };
+
+    
+
 
     
 
@@ -106,9 +110,19 @@ function StudentRegistration() {
 
     }
 
+    const appStyle = {
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+    };
+    
     return (
-        <div className='w-full'>
-            <div className=' flex w-full overflow-hidden rounded-lg'>
+        <motion.div className='w-full overflow-hidden'
+            initial={{ opacity: 0, x: 100 }}  
+            animate={{ opacity: 1, x: 0 }}   
+            transition={{ duration: 0.2 }} 
+        >
+            <div className='flex w-full overflow-hidden rounded-lg' style={appStyle}>
                 <div className='flex p-6  bg-[#00712d9c]  w-full'>
 
 
@@ -130,7 +144,7 @@ function StudentRegistration() {
 
                     <form onSubmit={educatorRegister} className='flex w-[80%]'>
                         <div className='bg-[#ffffffe8] py-5 px-10 rounded-lg w-full'>
-                            <div className=''> Student Registration</div>
+                            <div className=''>Educator Registration</div>
                             <div className='mt-2 flex gap-5'>
                                 <div className='w-full'>
                                     <div className='ml- flex text-2xl'>First name<h1 className='text-red-600 ml-1'>*</h1></div>
@@ -254,7 +268,7 @@ function StudentRegistration() {
 
                 </div>
             </div>
-        </div>
+        </motion.div>
     )
 }
 

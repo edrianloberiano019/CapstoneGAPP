@@ -7,6 +7,8 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import LoginPage from './classes/LoginPage';
 import Dashboard from './classes/Dashboard'
+import AdminDashboard from './classes/AdminDashboard';
+
 
 
 function App() {
@@ -20,6 +22,8 @@ function App() {
           <Route path="/Homepage" element={<HomePage />} />
           <Route path="/Loginpage" element={<LoginPage />} />
           <Route path="/educator" element={<Dashboard />} />
+          <Route path="/admin" element={<AdminDashboard />} />
+
 
         </Routes>
       </div>

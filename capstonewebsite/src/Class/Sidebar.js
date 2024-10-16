@@ -56,7 +56,7 @@ function Sidebar({ setSelectedView }) {
                             </button>
                         </div>
                     </div>
-                    <div>
+                    <div className='hidden'>
                         <button
                             onClick={() => toggleDropdown("educators")}
                             className="w-full text-xl text-left flex items-center justify-between py-1.5 px-4 transition duration-200 hover:bg-[#bbd188]"
@@ -101,18 +101,6 @@ function Sidebar({ setSelectedView }) {
                         className="block py-1.5 text-xl px-4 transition duration-200 hover:bg-[#bbd188]"
                     >
                         Leaderboards
-                    </a>
-                    <a
-                        href="/"
-                        className="block py-1.5 text-xl px-4 transition duration-200 hover:bg-[#bbd188]"
-                    >
-                        Calendar
-                    </a>
-                    <a
-                        href="/"
-                        className="block py-1.5 text-xl px-4 transition duration-200 hover:bg-[#bbd188]"
-                    >
-                        Journal Settings
                     </a>
                 </div>
             </div>

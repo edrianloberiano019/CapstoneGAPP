@@ -1,7 +1,27 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { getDownloadURL, ref } from "firebase/storage";
+import { storage } from "./firebaseConfig"; 
 
-const DashboardCarousel = ({ images }) => {
+const DashboardCarousel = () => {
+  const [images, setImages] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  const fetchImages = async () => {
+    const imageKeys = ["image1", "image2", "image3"];
+    const imageUrls = await Promise.all(
+      imageKeys.map(async (key) => {
+        const imageRef = ref(storage, `images/${key}`); 
+        try {
+          const url = await getDownloadURL(imageRef);
+          return url;
+        } catch (error) {
+          console.error(`Error fetching ${key}:`, error);
+          return null; 
+        }
+      })
+    );
+    setImages(imageUrls.filter((url) => url !== null));
+  };
 
   const nextSlide = useCallback(() => {
     const isLastSlide = currentIndex === images.length - 1;
@@ -16,13 +36,14 @@ const DashboardCarousel = ({ images }) => {
   };
 
   useEffect(() => {
+    fetchImages(); 
     const interval = setInterval(() => {
       nextSlide();
     }, 3000);
     return () => {
       clearInterval(interval);
     };
-  }, [nextSlide]); 
+  }, [nextSlide]);
 
   return (
     <div className="w-full mx-auto pb-2 pt-2">

@@ -5,6 +5,7 @@ import '../App.css';
 import Image1 from '../images/Image1.jpg'
 import { useNavigate } from 'react-router-dom';
 import Image2 from '../images/Image2.jpg'
+import { motion } from 'framer-motion'
 
 
 
@@ -42,9 +43,13 @@ const HomePage = () => {
                             <div className='flex absolute top-[-75px] z-20 m-0 text-[144px] text-[#1DD32F] Gods'>God's Grace</div>
                             <div className='flex absolute top-[40px] z-20 m-0 text-[144px] text-[#1DD32F] Gods'>Ministry A/G</div>
                         </div>
-                        <div className='z-50 relative'>
+                        <motion.div className='z-50 flex'
+                            initial={{ opacity: 0, x: -100 }}  
+                            animate={{ opacity: 1, x: 0 }}   
+                            transition={{ duration: 0.5 }}    
+                        >
                             <button onClick={login} className='hover:scale-110 duration-500  transform transition-all hover:shadow-2xl  z-30 mt-[215px] drop-shadow-lg bg-gradient-to-tr from-[#FCC429] to-[#E5603D] text-[35px] px-16 py-2 rounded-full'>Login</button>
-                        </div>
+                        </motion.div>
                     </div>
 
                 </div>

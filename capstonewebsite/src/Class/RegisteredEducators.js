@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
-import characterOne from '../images/ch1.png';
-import backgroundImage from '../images/bg1.jpg';
+import backgroundImage from '../images/bg.jpg';
 import Loading from './Loading';
+import {motion} from 'framer-motion'
 
 function RegisteredEducators() {
     const [users, setUsers] = useState([]);
@@ -34,10 +34,14 @@ function RegisteredEducators() {
         backgroundImage: `url(${backgroundImage})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-    };
+    };  
 
     return (
-        <div className='w-full drop-shadow-lg overflow-hidden'>
+        <motion.div className='w-full drop-shadow-lg overflow-hidden'
+            initial={{ opacity: 0, x: 100 }}  
+            animate={{ opacity: 1, x: 0 }}   
+            transition={{ duration: 0.2 }} 
+        >
             <div className='rounded-lg overflow-hidden' style={appStyle}>
                 <div className='p-6 flex w-full bg-[#00712d9c] drop-shadow-md'>
 
@@ -119,7 +123,7 @@ function RegisteredEducators() {
                     </div>
                 </div>
             </div>
-        </div>
+        </motion.div>
     );
 }
 

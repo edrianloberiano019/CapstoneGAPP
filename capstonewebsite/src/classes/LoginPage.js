@@ -7,19 +7,19 @@ import Image2 from '../images/Image2.jpg';
 import { useNavigate } from 'react-router-dom';
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from '../firebase';
-
-
 import { doc, getDoc } from "firebase/firestore";
 import { db } from '../firebase';
-
 import { toast } from "react-toastify";
 
 const LoginPage = () => {
+    const [loading, setLoading] = useState(false);
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [isEmailFocused, setEmailFocused] = useState(false);
+    const [isPasswordFocused, setPasswordFocused] = useState(false);
     const navigate = useNavigate();
-    const images = [
-        Image1,
-        Image2,
-    ];
+    const images = [Image1, Image2];
+
     const getUserRole = async (uid) => {
         const userDoc = doc(db, "users", uid);
         const userSnap = await getDoc(userDoc);
@@ -29,55 +29,40 @@ const LoginPage = () => {
         return null;
     };
 
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    // const [errorMessage, setErrorMessage] = useState('');
-
 
     const handleLogin = async (e) => {
         e.preventDefault();
+        setLoading(true);
 
         try {
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
-
             const userRole = await getUserRole(user.uid);
             if (userRole === 'admin') {
                 navigate('/admin');
             } else if (userRole === 'educator') {
                 navigate('/educator');
             } else if (userRole === 'student') {
-                toast.warning("Student accounts are not allowed to access to this portal.",{
+                toast.warning("Student accounts are not allowed to access this portal.", {
                     position: "top-center",
                     autoClose: 5000, 
                     hideProgressBar: false,
                     closeOnClick: false,
                     pauseOnHover: true,
-                    style: {
-                        color: 'black',
-                    }
-                })
-            } else {
-                toast.error("The Email or password is incorrect.", {
-                    position: "top-center"
                 });
+            } else {
+                toast.error("The Email or password is incorrect.", { position: "top-center" });
             }
         } catch (error) {
-            toast.error("Email or password is incorrect.", {
-                position: "top-center"
-            });
+            toast.error("Email or password is incorrect.", { position: "top-center" });
+        } finally {
+            setLoading(false);
         }
     };
 
-    // const example = async (e) => {
-    //     e.preventDefault()
-    //     navigate('/educator')
-    // }
-
     return (
         <div>
-            <div className='z-10'>
-            </div>
+            <div className='z-10'></div>
             <div className="w-full h-screen">
                 <Carousel images={images} interval={3000} />
             </div>
@@ -94,36 +79,56 @@ const LoginPage = () => {
                                     color: 'transparent'
                                 }}>LEVEL 2</div>
                                 <div className='mt-8 text-2xl font-semibold'>Login</div>
-                                <div className='px-7 mt-5'>
-                                    <div className='absolute ml-5 z-20 top-[470px]'>Username or Email:</div>
+                                
+                                <div className='relative mt-5'>
+                                    <label 
+                                        className={`absolute z-10 left-4 transition-all duration-300 ${isEmailFocused || email ? 'top-[-20px] text-sm text-gray-600' : 'top-[-15px] text-base text-black'}`}
+                                    >
+                                        Username or Email:
+                                    </label>
                                     <input
-                                        className='w-full z-10 rounded pl-2 text-xl drop-shadow-lg border-black border-solid focus:border-transparent focus:outline-none'
+                                        className='w-full z-20 rounded pl-2 text-xl drop-shadow-lg border-black border-solid focus:border-transparent focus:outline-none'
                                         type='email'
                                         value={email}
+                                        onFocus={() => setEmailFocused(true)}
+                                        onBlur={() => setEmailFocused(false)}
                                         onChange={(e) => setEmail(e.target.value)}
+                                        required
                                     />
                                 </div>
-
-                                <div className='flex px-7 mt-5'>
-                                    <div className='absolute ml-5 z-20 top-[517px]'>Password:</div>
+                                <div className='flex'>
+                                <div className='relative mt-6 w-full'>
+                                    <label 
+                                        className={`absolute left-4 z-10 transition-all duration-300 ${isPasswordFocused || password ? 'top-[-20px] text-sm text-gray-600' : 'top-[-15px] text-base text-black'}`}
+                                    >
+                                        Password:
+                                    </label>
                                     <input
-                                        className='w-full z-10 pl-2 text-xl drop-shadow-lg rounded-l focus:border-transparent focus:outline-none'
+                                        className='w-full z-20 pl-2 text-xl drop-shadow-lg rounded-l focus:border-transparent focus:outline-none'
                                         type='password'
                                         value={password}
+                                        onFocus={() => setPasswordFocused(true)}
+                                        onBlur={() => setPasswordFocused(false)}
                                         onChange={(e) => setPassword(e.target.value)}
+                                        required
                                     />
-                                    <div className='bg-white z-20 justify-center items-center border-l-[1px] border-[#d4d4d4] border-solid text-center rounded-r'>
-                                        <button className='flex px-2 h-full justify-center items-center'>show</button>
+                                    
+                                </div>
+                                <div className='bg-white z-20 justify-center h-full mt-6 items-center border-l-[1px] border-[#d4d4d4] border-solid text-center rounded-r'>
+                                        <button className='flex text-xl px-2 h-full justify-center items-center'>show</button>
                                     </div>
                                 </div>
-                                <div className='flex justify-end mr-7'>
+
+                                <div className='flex justify-end mt-1 mr-1'>
                                     <a href='/'>Forgot Password?</a>
                                 </div>
                                 <div className='z-50 relative'>
-                                    <button type='submit'
-                                        className='z-30 hover:scale-110 transform transition-all duration-200 tracking-widest mt-2 drop-shadow-lg bg-gradient-to-tr from-[#FCC429] to-[#E5603D] text-[25pxp] font-bold px-12 py-3 rounded-2xl'
+                                    <button 
+                                        type='submit'
+                                        disabled={loading} 
+                                        className={`z-30 hover:scale-110 transform transition-all duration-200 tracking-widest mt-2 drop-shadow-lg bg-gradient-to-tr from-[#FCC429] to-[#E5603D] text-[25px] font-bold px-12 py-3 rounded-2xl ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                                     >
-                                        Login
+                                        {loading ? 'Logging in...' : 'Login'} 
                                     </button>
                                 </div>
                             </form>
