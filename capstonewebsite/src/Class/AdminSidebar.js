@@ -96,14 +96,12 @@ function AdminSidebar({ setSelectedView }) {
                     >
                         Game Settings
                     </a>
-                    <a
-                        href="/"
-                        className="block py-1.5 text-xl px-4 transition duration-200 hover:bg-[#bbd188]"
+                    <button onClick={() => setSelectedView('leaderboard')}
+                        className="w-full text-xl text-left flex items-center justify-between py-1.5 px-4 transition duration-200 hover:bg-[#bbd188]"
                     >
-                        Leaderboards
-                    </a>
-                    <button onClick={() => setSelectedView('cal')}
-                        href="/"
+                        Leaderboard
+                    </button>
+                    <button onClick={() => setSelectedView('leaderboard')}
                         className="w-full text-xl text-left flex items-center justify-between py-1.5 px-4 transition duration-200 hover:bg-[#bbd188]"
                     >
                         Calendar
