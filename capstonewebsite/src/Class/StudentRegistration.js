@@ -25,6 +25,7 @@ function StudentRegistration() {
     const [GLandline, setGLandline] = useState("NA")
     const [telephone, setTelephone] = useState('');
     const [password, setPasswords] = useState('')
+    const [scores] = useState('0')
     const [status] = useState("student");
     const [Gtelephone, setTelephone2] = useState('');
 
@@ -69,6 +70,7 @@ function StudentRegistration() {
                     address: Address,
                     password: Password,
                     role: status,
+                    score: scores,
                     emergencyContact: {
                         guardianFirstName: GFName,
                         guardianLastName: GLName,

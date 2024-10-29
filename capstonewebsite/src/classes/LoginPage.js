@@ -10,6 +10,10 @@ import { auth } from '../firebase';
 import { doc, getDoc } from "firebase/firestore";
 import { db } from '../firebase';
 import { toast } from "react-toastify";
+import Particles from '../Class/ParticlesComponent';
+import { motion } from 'framer-motion'
+import { BackgroundBeams } from '../Class/background-beams';
+
 
 const LoginPage = () => {
     const [loading, setLoading] = useState(false);
@@ -45,7 +49,7 @@ const LoginPage = () => {
             } else if (userRole === 'student') {
                 toast.warning("Student accounts are not allowed to access this portal.", {
                     position: "top-center",
-                    autoClose: 5000, 
+                    autoClose: 5000,
                     hideProgressBar: false,
                     closeOnClick: false,
                     pauseOnHover: true,
@@ -67,10 +71,18 @@ const LoginPage = () => {
                 <Carousel images={images} interval={3000} />
             </div>
             <div className='flex'>
-                <div className='w-full z-20 h-screen absolute top-0 right-0 bg-[#000000d3]'>
+                <div className='w-full overflow-hidden z-20 h-screen absolute top-0 right-0 bg-[#000000d3]'>
+                    <div className=' '>
+                        <BackgroundBeams />
+
+                    </div>
                     <Navbar />
-                    <div className='flex justify-center items-center mt-48'>
-                        <div className='flex w-[400px] px-10 pt-16 pb-24 rounded-2xl justify-center items-center text-center bg-gradient-to-tr from-[#68F276] to-[#1DD32F] login'>
+                    <motion.div className=' flex justify-center items-center mt-48'
+                        initial={{ opacity: 0, x: 100 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.5 }}
+                    >
+                        <div className='flex w-[400px] z-50 px-10 pt-16 pb-24 rounded-2xl justify-center items-center text-center bg-gradient-to-tr from-[#68F276] to-[#1DD32F] login'>
                             <form onSubmit={handleLogin} className='w-full'>
                                 <div className='text-7xl lvl' style={{
                                     backgroundImage: 'linear-gradient(to right, #fccf46, #ee5343)',
@@ -79,9 +91,9 @@ const LoginPage = () => {
                                     color: 'transparent'
                                 }}>LEVEL 2</div>
                                 <div className='mt-8 text-2xl font-semibold'>Login</div>
-                                
+
                                 <div className='relative mt-5'>
-                                    <label 
+                                    <label
                                         className={`absolute z-10 left-4 transition-all duration-300 ${isEmailFocused || email ? 'top-[-20px] text-sm text-gray-600' : 'top-[-15px] text-base text-black'}`}
                                     >
                                         Username or Email:
@@ -97,24 +109,24 @@ const LoginPage = () => {
                                     />
                                 </div>
                                 <div className='flex'>
-                                <div className='relative mt-6 w-full'>
-                                    <label 
-                                        className={`absolute left-4 z-10 transition-all duration-300 ${isPasswordFocused || password ? 'top-[-20px] text-sm text-gray-600' : 'top-[-15px] text-base text-black'}`}
-                                    >
-                                        Password:
-                                    </label>
-                                    <input
-                                        className='w-full z-20 pl-2 text-xl drop-shadow-lg rounded-l focus:border-transparent focus:outline-none'
-                                        type='password'
-                                        value={password}
-                                        onFocus={() => setPasswordFocused(true)}
-                                        onBlur={() => setPasswordFocused(false)}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        required
-                                    />
-                                    
-                                </div>
-                                <div className='bg-white z-20 justify-center h-full mt-6 items-center border-l-[1px] border-[#d4d4d4] border-solid text-center rounded-r'>
+                                    <div className='relative mt-6 w-full'>
+                                        <label
+                                            className={`absolute left-4 z-10 transition-all duration-300 ${isPasswordFocused || password ? 'top-[-20px] text-sm text-gray-600' : 'top-[-15px] text-base text-black'}`}
+                                        >
+                                            Password:
+                                        </label>
+                                        <input
+                                            className='w-full z-20 pl-2 text-xl drop-shadow-lg rounded-l focus:border-transparent focus:outline-none'
+                                            type='password'
+                                            value={password}
+                                            onFocus={() => setPasswordFocused(true)}
+                                            onBlur={() => setPasswordFocused(false)}
+                                            onChange={(e) => setPassword(e.target.value)}
+                                            required
+                                        />
+
+                                    </div>
+                                    <div className='bg-white z-20 justify-center h-full mt-6 items-center border-l-[1px] border-[#d4d4d4] border-solid text-center rounded-r'>
                                         <button className='flex text-xl px-2 h-full justify-center items-center'>show</button>
                                     </div>
                                 </div>
@@ -123,17 +135,17 @@ const LoginPage = () => {
                                     <a href='/'>Forgot Password?</a>
                                 </div>
                                 <div className='z-50 relative'>
-                                    <button 
+                                    <button
                                         type='submit'
-                                        disabled={loading} 
+                                        disabled={loading}
                                         className={`z-30 hover:scale-110 transform transition-all duration-200 tracking-widest mt-2 drop-shadow-lg bg-gradient-to-tr from-[#FCC429] to-[#E5603D] text-[25px] font-bold px-12 py-3 rounded-2xl ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                                     >
-                                        {loading ? 'Logging in...' : 'Login'} 
+                                        {loading ? 'Logging in...' : 'Login'}
                                     </button>
                                 </div>
                             </form>
                         </div>
-                    </div>
+                    </motion.div>
                 </div>
             </div>
         </div>

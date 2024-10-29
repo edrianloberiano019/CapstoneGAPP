@@ -47,7 +47,7 @@ const ImageComponent = () => {
     uploadTask.on(
       "state_changed",
       (snapshot) => {
-        // Handle state change here if necessary
+        
       },
       (error) => {
         console.error("Upload failed", error);
@@ -142,10 +142,10 @@ const ImageComponent = () => {
   }
 
   return (
-    <div className="flex space-x-8 mt-4 overflow-hidden"> {/* Added overflow-hidden */}
+    <div className="flex space-x-8 mt-4 h-full overflow-hidden"> 
       {["image1", "image2", "image3"].map((imageKey, index) => (
         <motion.div key={imageKey} className="flex w-full flex-col"
-          initial={{ opacity: 0, x: 50 }}  // Reduced x value to avoid going outside bounds
+          initial={{ opacity: 0, x: 50 }} 
           animate={{ opacity: 1, x: 0 }}   
           transition={{ duration: 0.5 }}   
         >
@@ -161,6 +161,7 @@ const ImageComponent = () => {
           </div>
           <div className="flex justify-end my-6">
             <div>
+              
               <input
                 type="file"
                 id={`fileInput${index + 1}`}

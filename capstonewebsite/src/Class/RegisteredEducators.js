@@ -33,8 +33,8 @@ function RegisteredEducators() {
     const appStyle = {
         backgroundImage: `url(${backgroundImage})`,
         backgroundSize: 'cover',
-        backgroundPosition: 'center',
-    };  
+         backgroundPosition: 'center',
+    }; 
 
     return (
         <motion.div className='w-full drop-shadow-lg overflow-hidden'

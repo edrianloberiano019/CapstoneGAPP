@@ -27,7 +27,7 @@ const Dashboard = () => {
       <div className="absolute z-10  top-0 w-full">
         <Navbar setSelectedView={setSelectedView} isAuthenticated={isUserLoggedIn} />
       </div>
-      <div className='flex z-20 w-full h-screen pt-16'>
+      <div className='flex z-20 w-full h-full pt-16'>
         <div>
           <Sidebar setSelectedView={setSelectedView} />
         </div>
