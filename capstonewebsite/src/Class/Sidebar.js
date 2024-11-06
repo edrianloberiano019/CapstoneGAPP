@@ -12,9 +12,9 @@ function Sidebar({ setSelectedView }) {
     };
 
     return (
-        <div className="flex h-full bg-[#FFFBE6] drop-shadow-lg">
-            <div className="w-64 bg-[#D5ED9F] text-black">
-                <div className="pt-6 pl-4 pb-2 text-3xl font-bold">Categories</div>
+        <div className="flex h-screen bg-[#FFFBE6] drop-shadow-lg">
+            <div className="w-64 bg-[#D5ED9F] pt-20 text-black">
+                <div className="pl-4 pb-2 text-3xl font-bold">Categories</div>
                 <div className="">
                     <button
                         onClick={() => setSelectedView('home')}
@@ -40,13 +40,19 @@ function Sidebar({ setSelectedView }) {
                             </svg>
                         </button>
                         <div
-                            className={`overflow-hidden transition-all duration-300 ease-in-out ${openDropdown === "students" ? "max-h-40" : "max-h-0"
+                            className={`overflow-hidden transition-all duration-300 ease-in-out ${openDropdown === "students" ? "max-h-100" : "max-h-0"
                                 }`}
                         >
                             <button onClick={() => setSelectedView('stureg')}
                                 className="block py-1.5 text-left text-xl w-full px-4 pl-8 transition duration-200 hover:bg-[#bbd188]"
                             >
                                 Student Registration
+                            </button>
+                            <button onClick={() => setSelectedView('regstu') }
+                                href="/"
+                                className="block py-1.5 text-left text-xl w-full px-4 pl-8 transition duration-200 hover:bg-[#bbd188]"
+                            >
+                                Student Progress
                             </button>
                             <button onClick={() => setSelectedView('regstu') }
                                 href="/"
@@ -89,19 +95,22 @@ function Sidebar({ setSelectedView }) {
                             </button>
                         </div>
                     </div>
+                    
 
-                    <a
-                        href="/"
-                        className="block py-1.5 text-xl px-4 transition duration-200 hover:bg-[#bbd188]"
+                    <button
+                        onClick={() => setSelectedView('lead')}
+                        className="block py-1.5 w-full text-left text-xl px-4 transition duration-200 hover:bg-[#bbd188]"
                     >
-                        Game Settings
-                    </a>
-                    <a
-                        href="/"
-                        className="block py-1.5 text-xl px-4 transition duration-200 hover:bg-[#bbd188]"
+                        Leaderboard
+                    </button>
+
+                    <button
+                        onClick={() => setSelectedView('cals')}
+                        className="block py-1.5 w-full text-left text-xl px-4 transition duration-200 hover:bg-[#bbd188]"
                     >
-                        Leaderboards
-                    </a>
+                        Calendar
+                    </button>
+
                 </div>
             </div>
         </div>

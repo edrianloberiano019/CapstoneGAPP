@@ -9,6 +9,7 @@ import DoraImage from '../images/ch1.png';
 
 function AdminSidebar({ setSelectedView }) {
     const [openDropdown, setOpenDropdown] = useState("");
+    const [openDropdown2, setOpenDropdown2] = useState("");
 
     const toggleDropdown = (dropdown) => {
         if (openDropdown === dropdown) {
@@ -17,6 +18,15 @@ function AdminSidebar({ setSelectedView }) {
             setOpenDropdown(dropdown);
         }
     };
+
+    const toggleDropdown2 = (dropdown2) => {
+        if (openDropdown2 === dropdown2) {
+            setOpenDropdown2("");
+        } else {
+            setOpenDropdown2(dropdown2);
+        }
+    };
+    
 
     const people = [
         {
@@ -46,11 +56,11 @@ function AdminSidebar({ setSelectedView }) {
       ];
 
     return (
-        <div className="flex flex-col justify-between container h-screen bg-[#D5ED9F] drop-shadow-lg">
-            <div className="w-64 bg-[#D5ED9F] text-black">
-                <div className="pt-6 pl-4 pb-2 text-3xl font-bold">Categories</div>
-                <div className="flex justify-between items-end">
-                    <div>
+        <div className="flex flex-col justify-between pt-20 container h-screen bg-[#D5ED9F] drop-shadow-lg">
+            <div className="w-64 bg-[#D5ED9F]  text-black">
+                <div className="pl-4 pb-2 text-3xl font-bold">Categories</div>
+                <div className="flex w-full justify-between items-end">
+                    <div className='w-full'>
                         <button
                             onClick={() => setSelectedView('home')}
                             className="block py-1.5 w-full text-left text-xl px-4 transition duration-200 hover:bg-[#bbd188]"
@@ -59,12 +69,12 @@ function AdminSidebar({ setSelectedView }) {
                         </button>
                         <div>
                             <button
-                                onClick={() => toggleDropdown("students")}
+                                onClick={() => toggleDropdown2("students")}
                                 className="w-full text-xl text-left flex items-center justify-between py-1.5 px-4 transition duration-200 hover:bg-[#bbd188]"
                             >
                                 <span>Students</span>
                                 <svg
-                                    className={`w-4 h-4 ml-2 transition-transform duration-300 ease-in-out ${openDropdown === "students" ? 'rotate-90 ' : 'rotate-0'}`}
+                                    className={`w-4 h-4 ml-2 mr-3 transition-transform duration-300 ease-in-out ${openDropdown2 === "students" ? 'rotate-90 ' : 'rotate-0'}`}
                                     xmlns="http://www.w3.org/2000/svg"
                                     fill="none"
                                     viewBox="0 0 24 24"
@@ -75,9 +85,14 @@ function AdminSidebar({ setSelectedView }) {
                                 </svg>
                             </button>
                             <div
-                                className={`overflow-hidden transition-all duration-300 ease-in-out ${openDropdown === "students" ? "max-h-40" : "max-h-0"
+                                className={`overflow-hidden transition-all duration-300 ease-in-out ${openDropdown2 === "students" ? "max-h-60" : "max-h-0"
                                     }`}
                             >
+                                <button onClick={() => setSelectedView('stureg')}
+                                    className="block py-1.5 text-left text-xl w-full px-4 pl-8 transition duration-200 hover:bg-[#bbd188]"
+                                >
+                                    Student Progress
+                                </button>
                                 <button onClick={() => setSelectedView('stureg')}
                                     className="block py-1.5 text-left text-xl w-full px-4 pl-8 transition duration-200 hover:bg-[#bbd188]"
                                 >
@@ -98,7 +113,7 @@ function AdminSidebar({ setSelectedView }) {
                             >
                                 <span>Educators</span>
                                 <svg
-                                    className={`w-4 h-4 ml-2 transition-transform duration-300 ease-in-out ${openDropdown === "educators" ? 'rotate-90 ' : 'rotate-0'}`}
+                                    className={`w-4 h-4 ml-2 mr-3 transition-transform duration-300 ease-in-out ${openDropdown === "educators" ? 'rotate-90 ' : 'rotate-0'}`}
                                     xmlns="http://www.w3.org/2000/svg"
                                     fill="none"
                                     viewBox="0 0 24 24"
@@ -136,12 +151,7 @@ function AdminSidebar({ setSelectedView }) {
                         >
                             Leaderboard
                         </button>
-                        <button onClick={() => setSelectedView('bg')}
-                            className="w-full text-xl text-left flex items-center justify-between py-1.5 px-4 transition duration-200 hover:bg-[#bbd188]"
-                        >
-                            Calendar
-                        </button>
-                        <button onClick={() => setSelectedView('users')}
+                        <button onClick={() => setSelectedView('cal')}
                             className="w-full text-xl text-left flex items-center justify-between py-1.5 px-4 transition duration-200 hover:bg-[#bbd188]"
                         >
                             Calendar
@@ -150,8 +160,8 @@ function AdminSidebar({ setSelectedView }) {
                     </div>
                 </div>
             </div>
-            <div className='mb-24'>
-                <div className="flex ml-9 mb-2 w-full">
+            <div className='mb-4 '>
+                <div className="flex ml-9  w-full">
                     <AnimatedTooltip items={people} />
                 </div>
                 <div className='text-center ml-0'>Developers</div>

@@ -7,12 +7,19 @@ import backgroundImage from "../images/schedBG.jpg";
 import backgroundImages from "../images/celebBG.jpg";
 import { motion } from 'framer-motion';
 import Loading from '../Class/Loading'
+import { format } from 'date-fns';
+import { db } from '../firebase';
+import { doc, getDoc } from 'firebase/firestore';
 
+const today = new Date();
+const currentDays = format(today, 'EEEE');
+const formattedDates = format(today, 'yyyy-MM-dd');
 
-function DashboardChild() {
+function DashboardChild({ setSelectedView }) {
     const [loading, setLoading] = useState(true);
+    const [eventText, setEventText] = useState('No Event');
     const images = [image1, image2, image3];
-    
+
     const appStyle = {
         backgroundImage: `url(${backgroundImage})`,
         backgroundSize: 'cover',
@@ -36,7 +43,7 @@ function DashboardChild() {
             setCurrentDate(new Date());
         }, 1000);
 
-        return () => clearInterval(intervalId); 
+        return () => clearInterval(intervalId);
     }, []);
 
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -44,11 +51,10 @@ function DashboardChild() {
     const currentDay = currentDate.toLocaleString('en-US', { weekday: 'long' });
 
     useEffect(() => {
-        // Simulate image loading with setTimeout (or fetch images with a real async call)
         const loadImages = new Promise((resolve) => {
             setTimeout(() => {
                 resolve();
-            }, 2000); // Simulating 2s image load time
+            }, 2000);
         });
 
         loadImages.then(() => {
@@ -56,16 +62,29 @@ function DashboardChild() {
         });
     }, []);
 
+    useEffect(() => {
+        const fetchEvent = async () => {
+            const docRef = doc(db, 'events', formattedDates);
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                setEventText(docSnap.data().eventText);
+            }
+        };
+
+        fetchEvent();
+    }, []);
+
     if (loading) {
         return <Loading />;
     }
 
     return (
-        <div className="flex-1 px-6 pt-1">
-            <div className="text-3xl">Announcements</div>
+        <div className="flex-1 px-6 h-screen">
+            <div className="text-4xl text-center uppercase">Announcements</div>
             <motion.div
-                initial={{ opacity: 0, x: 100 }}  
-                animate={{ opacity: 1, x: 0 }}   
+                initial={{ opacity: 0, x: 100 }}
+                animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
             >
                 <DashboardCarousel images={images} />
@@ -74,8 +93,8 @@ function DashboardChild() {
             <div className="flex mb-6 gap-10">
                 <div className="flex w-full">
                     <div className="w-full">
-                        <div>Leaderboard</div>
-                        <motion.div 
+                        <div className='text-center pb-1 pt-3 uppercase '>Leaderboard</div>
+                        <motion.div
                             initial={{ opacity: 0, x: 100 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.5, delay: 0.5 }}
@@ -98,17 +117,20 @@ function DashboardChild() {
                     </div>
                 </div>
                 <div className="w-full">
-                    <div>Calendar</div>
-                    <motion.div 
+                    <div className='text-center uppercase pt-3 pb-1 w-full'>Calendar</div>
+                    <motion.div
                         initial={{ opacity: 0, x: 100 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.5, delay: 0.7 }}
                     >
-                        <button className="h-[200px] hover:scale-105 transition-all w-full flex justify-center content-center items-center drop-shadow-lg p-6 rounded-lg text-center" style={appStyle}>
-                            <div>
-                                <p className="mt-4 text-black text-left">{currentDay}</p>
-                                <p className="text-6xl text-black font-bold">{formattedDate}</p>
-                                <p className="text-black">No Event</p>
+                        <button onClick={() => setSelectedView('cals')} className="h-[200px] overflow-hidden hover:scale-105 transition-all w-full flex justify-center items-center drop-shadow-lg p-6 rounded-lg text-center" style={appStyle}>
+                            <div >
+                                <div className='w-full'>
+                                    <p className="mt-4 text-black text-center">{currentDays}</p>
+                                    <p className="text-6xl text-black font-bold">{formattedDate}</p>
+                                
+                                </div>
+                                <p className="text-black">{eventText}</p>
                             </div>
                         </button>
                     </motion.div>

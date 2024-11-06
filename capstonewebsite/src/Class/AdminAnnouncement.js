@@ -5,7 +5,7 @@ import {PinContainer } from '../Class/3d-pin'
 function AdminAnnouncement() {
   return (
     <div>
-        <div>Announcements</div>
+        <div className='text-4xl uppercase text-center'>Announcement images</div>
         <UploadImage/>
     </div>
   )

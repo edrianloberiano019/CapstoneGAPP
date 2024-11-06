@@ -1,6 +1,6 @@
 import { getDownloadURL, ref, uploadBytesResumable, deleteObject } from "firebase/storage";
 import { useState, useEffect } from "react";
-import { storage } from "./firebaseConfig"; 
+import { storage } from "./firebaseConfig";
 import { toast } from "react-toastify";
 import Loading from "./Loading";
 import { motion } from 'framer-motion';
@@ -21,7 +21,7 @@ const ImageComponent = () => {
     image2: null,
     image3: null,
   });
-  const [loading, setLoading] = useState(true); 
+  const [loading, setLoading] = useState(true);
 
   const handleFileChange = (imageKey) => (e) => {
     if (e.target.files[0]) {
@@ -47,7 +47,7 @@ const ImageComponent = () => {
     uploadTask.on(
       "state_changed",
       (snapshot) => {
-        
+
       },
       (error) => {
         console.error("Upload failed", error);
@@ -96,7 +96,7 @@ const ImageComponent = () => {
         }));
         setFiles((prevFiles) => ({
           ...prevFiles,
-          [imageKey]: null, 
+          [imageKey]: null,
         }));
       })
       .catch((error) => {
@@ -113,7 +113,7 @@ const ImageComponent = () => {
   useEffect(() => {
     const fetchImages = async () => {
       const imageKeys = ["image1", "image2", "image3"];
-      let fetchedImages = 0; 
+      let fetchedImages = 0;
 
       for (const key of imageKeys) {
         const imageRef = ref(storage, `images/${key}`);
@@ -128,7 +128,7 @@ const ImageComponent = () => {
         } finally {
           fetchedImages += 1;
           if (fetchedImages === imageKeys.length) {
-            setLoading(false);  
+            setLoading(false);
           }
         }
       }
@@ -142,12 +142,12 @@ const ImageComponent = () => {
   }
 
   return (
-    <div className="flex space-x-8 mt-4 h-full overflow-hidden"> 
+    <div className="flex space-x-8 mt-4 h-full overflow-hidden">
       {["image1", "image2", "image3"].map((imageKey, index) => (
         <motion.div key={imageKey} className="flex w-full flex-col"
-          initial={{ opacity: 0, x: 50 }} 
-          animate={{ opacity: 1, x: 0 }}   
-          transition={{ duration: 0.5 }}   
+          initial={{ opacity: 0, x: 50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: index * 0.2}}
         >
           <div className="flex w-full flex-col items-center">
             {imageUrls[imageKey] && (
@@ -161,7 +161,7 @@ const ImageComponent = () => {
           </div>
           <div className="flex justify-end my-6">
             <div>
-              
+
               <input
                 type="file"
                 id={`fileInput${index + 1}`}
@@ -177,18 +177,20 @@ const ImageComponent = () => {
               </label>
             </div>
             <button
-              className="bg-red-500 text-xl px-4 text-white mx-2 rounded-xl"
+              className="bg-red-500 hover:scale-105 transition-all text-xl px-4 text-white mx-2 rounded-xl"
               onClick={() => handleRemove(imageKey)}
             >
               <div>Remove</div>
             </button>
             <button
-              className="bg-green-600 text-white text-xl px-4 rounded-xl"
+              className={`${uploading[imageKey] || !files[imageKey] ? "bg-gray-400 cursor-not-allowed" : "bg-green-600 hover:scale-105"
+                } transition-all text-white text-xl px-4 rounded-xl`}
               onClick={() => handleUpload(imageKey)}
               disabled={uploading[imageKey] || !files[imageKey]}
             >
               {uploading[imageKey] ? "Uploading..." : "Upload Image"}
             </button>
+
           </div>
         </motion.div>
       ))}

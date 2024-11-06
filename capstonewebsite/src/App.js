@@ -8,6 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import LoginPage from './classes/LoginPage';
 import Dashboard from './classes/Dashboard'
 import AdminDashboard from './classes/AdminDashboard';
+import ForgotPassword from './Class/ForgotPassword';
 
 
 
@@ -23,6 +24,8 @@ function App() {
           <Route path="/Loginpage" element={<LoginPage />} />
           <Route path="/educator" element={<Dashboard />} />
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/forgotP" element={<ForgotPassword />} />
+
 
 
         </Routes>

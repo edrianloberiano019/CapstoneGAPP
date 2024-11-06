@@ -12,7 +12,7 @@ import { db } from '../firebase';
 import { toast } from "react-toastify";
 import Particles from '../Class/ParticlesComponent';
 import { motion } from 'framer-motion'
-import { BackgroundBeams } from '../Class/background-beams';
+import { BackgroundBeamsWithCollision } from '../Class/background-beams-with-collision';
 
 
 const LoginPage = () => {
@@ -32,6 +32,10 @@ const LoginPage = () => {
         }
         return null;
     };
+
+    const toForgotPassword = () => {
+        navigate('/forgotP');
+    }
 
 
     const handleLogin = async (e) => {
@@ -67,22 +71,27 @@ const LoginPage = () => {
     return (
         <div>
             <div className='z-10'></div>
-            <div className="w-full h-screen">
+            <div className=" w-full h-screen">
                 <Carousel images={images} interval={3000} />
             </div>
             <div className='flex'>
                 <div className='w-full overflow-hidden z-20 h-screen absolute top-0 right-0 bg-[#000000d3]'>
-                    <div className=' '>
-                        <BackgroundBeams />
+                    <div className='flex z-10 absolute top-0 w-full '>
+                        <BackgroundBeamsWithCollision />
 
                     </div>
-                    <Navbar />
+                    <div className='z-30 sticky top-0 w-full'>
+                        <Navbar />
+                    
+                    </div>
                     <motion.div className=' flex justify-center items-center mt-48'
                         initial={{ opacity: 0, x: 100 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.5 }}
                     >
-                        <div className='flex w-[400px] z-50 px-10 pt-16 pb-24 rounded-2xl justify-center items-center text-center bg-gradient-to-tr from-[#68F276] to-[#1DD32F] login'>
+                        <div className='flex w-[400px] z-50 px-10 pt-16 pb-24 rounded-2xl justify-center items-center text-center bg-gradient-to-tr from-[#68F276] to-[#1DD32F] login'
+                        
+                        >
                             <form onSubmit={handleLogin} className='w-full'>
                                 <div className='text-7xl lvl' style={{
                                     backgroundImage: 'linear-gradient(to right, #fccf46, #ee5343)',
@@ -132,7 +141,7 @@ const LoginPage = () => {
                                 </div>
 
                                 <div className='flex justify-end mt-1 mr-1'>
-                                    <a href='/'>Forgot Password?</a>
+                                    <button onClick={toForgotPassword} href=''>Forgot Password?</button>
                                 </div>
                                 <div className='z-50 relative'>
                                     <button

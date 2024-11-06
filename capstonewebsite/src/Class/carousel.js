@@ -11,7 +11,7 @@ const Carousel = ({ images, interval = 3000 }) => {
   }, [images.length, interval]);
 
   return (
-    <div className="relative">
+    <div className="absolute top-0 w-full h-screen">
       <div className="overflow-hidden">
         <div className="absolute inset-0 flex">
           {images.map((image, i) => (

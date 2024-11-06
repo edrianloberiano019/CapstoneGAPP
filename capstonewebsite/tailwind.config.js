@@ -1,17 +1,11 @@
-/** @type {import('tailwindcss').Config} */
+// tailwind.config.js
 module.exports = {
-  purge: ['./src/**/*.html', './src/**/*.js'],
-  content: [],
-  theme: {
-    extend: {
-      textShadow: {
-        'xl': '0 2px 5px rgba(0, 0, 0, 0.5)',
-      },
-    },
-  },
-  plugins: [
+  content: [
+    "./src/**/*.{js,jsx,ts,tsx}",
+    "./public/index.html"
   ],
-}
-
-
-
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+};
