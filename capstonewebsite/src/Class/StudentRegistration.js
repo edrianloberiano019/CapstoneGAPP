@@ -5,10 +5,13 @@ import { auth, db } from '../firebase';
 import { setDoc, doc, updateDoc, collection, query, where, getDocs } from "firebase/firestore";
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { toast } from "react-toastify";
-import {motion} from 'framer-motion'
+import { motion } from 'framer-motion'
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import DefaultImage from '../images/ch1.png'
+import LoadingButtons from '../Class/LoadingButtons'
 
 function StudentRegistration() {
-    const [searchEmail, setSearchEmail] = useState(""); 
+    const [searchEmail, setSearchEmail] = useState("");
     const [FirstName, setFName] = useState("");
     const [LastName, setLName] = useState("");
     const [MiddleName, setMName] = useState("NA");
@@ -28,32 +31,45 @@ function StudentRegistration() {
     const [password, setPasswords] = useState('')
     const [status] = useState("student");
     const [Gtelephone, setTelephone2] = useState('');
-    const [userFound, setUserFound] = useState(false); 
+    const [userFound, setUserFound] = useState(false);
     const [userId, setUserId] = useState("");
+    const [characterOne, setCharacterOne] = useState(DefaultImage);
+    const [imageFile, setImageFile] = useState(null);
+    const [loading, setLoading] = useState(false)
 
 
     const handleTelephoneChange = (e) => {
         const value = e.target.value.replace(/[^0-9]/g, '').slice(0, 11);
         setTelephone(value);
-        setPhone(value); 
+        setPhone(value);
     };
 
     const handleTelephoneChange2 = (e) => {
         const value = e.target.value.replace(/[^0-9]/g, '').slice(0, 11);
         setTelephone2(value);
-        setGPhone(value); 
+        setGPhone(value);
     };
 
 
     const studentRegister = async (e) => {
         e.preventDefault();
+        setLoading(true)
         try {
-            if (userFound) { 
+            if (!imageFile && !characterOne) {
+                toast.error("Please upload an image before saving.", { position: "top-center", autoClose: 5000 });
+                setLoading(false)
+
+                return;
+            }
+
+            if (userFound) {
                 if (password !== Password) {
                     toast.error("The passwords do not match.", { position: "top-center", autoClose: 5000 });
-                    return; 
+                    setLoading(false)
+
+                    return;
                 }
-    
+
                 const userDocRef = doc(db, "users", userId);
                 await updateDoc(userDocRef, {
                     firstName: FirstName,
@@ -74,12 +90,25 @@ function StudentRegistration() {
                         guardianEmail: GEmail,
                         guardianLandline: GLandline
                     }
+                    
                 });
-                toast.success("User information updated successfully!", { position: "top-center", autoClose: 5000 });
-                setUserFound(false); 
+
+                if (imageFile) {
+                    const storage = getStorage();
+                    const storageRef = ref(storage, `images/${Email}.jpg`);
+                    await uploadBytes(storageRef, imageFile);
+                    const imageUrl = await getDownloadURL(storageRef);
+                    setCharacterOne(imageUrl);
+                    toast.success('Image updated successfully!', { position: "top-right", autoClose: 3000 });
+                }
+
+                toast.success("User information updated successfully!", { position: "top-right", autoClose: 5000 });
+                setUserFound(false);
+                setLoading(false)
+
             } else {
                 if (password !== Password) {
-                    toast.error("The passwords do not match.", { position: "top-center", autoClose: 5000 });
+                    toast.error("The passwords do not match.", { position: "top-right", autoClose: 5000 });
                     return;
                 } else {
                     const userCredential = await createUserWithEmailAndPassword(auth, Email, Password);
@@ -95,6 +124,8 @@ function StudentRegistration() {
                         address: Address,
                         password: Password,
                         role: status,
+                        score: 0,
+                        puzzleScore: 0,
                         emergencyContact: {
                             guardianFirstName: GFName,
                             guardianLastName: GLName,
@@ -104,14 +135,27 @@ function StudentRegistration() {
                             guardianLandline: GLandline
                         }
                     });
-                    toast.success("Successfully registered!", { position: "top-center", autoClose: 5000 });
+
+                    if (imageFile) {
+                        const storage = getStorage();
+                        const storageRef = ref(storage, `images/${Email}.jpg`);
+                        await uploadBytes(storageRef, imageFile);
+                        const imageUrl = await getDownloadURL(storageRef);
+                        setCharacterOne(imageUrl);
+                        toast.success('Image saved successfully!', { position: "top-right", autoClose: 3000, delay: 200 });
+                    }
+
+                    toast.success("Successfully registered!", { position: "top-right", autoClose: 5000 });
+                    setLoading(false)
                 }
             }
         } catch (error) {
-            toast.error(error.message, { position: "top-center", autoClose: 5000 });
-            console.error("Error", error);
+            toast.info('The image is set to default.', { position: "top-center", autoClose: 5000 });
+            setLoading(false)
         }
     };
+
+
 
 
     const appStyle = {
@@ -126,7 +170,7 @@ function StudentRegistration() {
         try {
             const q = query(collection(db, "users"), where("email", "==", searchEmail));
             const querySnapshot = await getDocs(q);
-    
+
             if (!querySnapshot.empty) {
                 const userDoc = querySnapshot.docs[0];
                 const userData = userDoc.data();
@@ -146,7 +190,12 @@ function StudentRegistration() {
                     setGPhone(userData.emergencyContact?.guardianPhone || "");
                     setGEmail(userData.emergencyContact?.guardianEmail || "");
                     setGLandline(userData.emergencyContact?.guardianLandline || "NA");
-    
+
+
+                    const storage = getStorage();
+                    const imageRef = ref(storage, `images/${userData.email}.jpg`);
+                    const imageUrl = await getDownloadURL(imageRef);
+                    setCharacterOne(imageUrl);
                     setUserFound(true);
                 } else {
                     setUserFound(false);
@@ -161,14 +210,22 @@ function StudentRegistration() {
             toast.error("Error searching user!", { position: "top-center", autoClose: 3000 });
         }
     };
-    
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setImageFile(file);
+            setCharacterOne(URL.createObjectURL(file));
+        }
+    };
+
 
 
     return (
         <motion.div className='w-full '
-            initial={{ opacity: 0, x: 100 }}  
-            animate={{ opacity: 1, x: 0 }}   
-            transition={{ duratiom: 0.2 }} 
+            initial={{ opacity: 0, x: 100 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duratiom: 0.2 }}
         >
             <div className=' flex w-full overflow-hidden rounded-lg' style={appStyle}>
                 <div className='flex p-6  bg-[#00712d9c] w-full'>
@@ -176,22 +233,24 @@ function StudentRegistration() {
 
                     <div className='flex w-[20%]'>
                         <div className='w-full mr-6'>
-                            <div className='w-full  mt-10'>
-                                <div className='flex mr-6 justify-center content-center items-center w-full'>
-                                    <img className='rounded-full drop-shadow-lg border-solid border-[#2db162]  border-4' src={characterOne} alt='avatar' />
-
+                            <div className='w-full mt-10'>
+                                <div className='flex mr-6 justify-center items-center w-full'>
+                                    <img className='rounded-full text-center content-center max-w-[250px] max-h-[250px] drop-shadow-lg border-solid border-[#2db162] border-4' src={characterOne} alt='avatar' />
                                 </div>
                             </div>
-                            <div className='w-full flex content-center items-center justify-center mt-5 text-center drop-shadow-lg '>
-                                <input id='fileInput' className='text-xl flex text-center ' style={{display: "none"}} type='file' accept='image/*' />
-                                
-                                <label
-                                className="text-black cursor-pointer text-xl"
-                                htmlFor='fileInput'>
-                                Uploade file
+                            <div className='w-full flex items-center justify-center mt-5 text-center drop-shadow-lg'>
+                                <input
+                                    id='fileInput'
+                                    className='text-xl text-center'
+                                    style={{ display: 'none' }}
+                                    type='file'
+                                    accept='image/*'
+                                    onChange={handleFileChange}
+                                />
+                                <label className='cursor-pointer text-xl bg-blue-400 text-black hover:text-white hover:bg-blue-700 px-5 py-2 rounded-md hover: ' htmlFor='fileInput'>
+                                    Upload a file
                                 </label>
                             </div>
-
                         </div>
                     </div>
 
@@ -199,9 +258,14 @@ function StudentRegistration() {
                         <div className='bg-[#ffffffe8] py-5 px-10 rounded-lg w-full'>
                             <div className='flex justify-between'>
                                 <div>Student Registration</div>
-                                <div className=''>
-                                    <input className='px-5 text-2xl bg-gray-300 rounded-l-xl' type='search' value={searchEmail} onChange={(e) => setSearchEmail(e.target.value)} />
-                                    <button className='text-2xl px-3 ' type='button' onClick={handleSearch}>Search</button>
+                                <div className='flex items-center bg-gray-300 rounded-xl'>
+                                    <input className='px-5 text-2xl bg-transparent outline-none' type='search' value={searchEmail} placeholder='Search' onChange={(e) => setSearchEmail(e.target.value)} />
+                                    <button className='text-2xl px-3 ' type='button' onClick={handleSearch}>
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+                                            <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z" clip-rule="evenodd" />
+                                        </svg>
+
+                                    </button>
                                 </div>
                             </div>
                             <div className='mt-2 flex gap-5'>
@@ -247,14 +311,14 @@ function StudentRegistration() {
                                 <div className='w-full'>
                                     <div className='ml-4 text-2xl flex'>Phone no.<h1 className='text-red-600 ml-1'>*</h1></div>
 
-                                    <input 
+                                    <input
                                         type="tel"
                                         id="telephone"
                                         name="telephone"
                                         value={Phone}
                                         onChange={handleTelephoneChange}
                                         className="w-full bg-gray-300 rounded-xl px-4 focus:outline-none text-xl py-1"
-                                        
+
                                         maxLength={11}
                                         placeholder="Enter 11-digit phone number"
                                         required
@@ -290,19 +354,19 @@ function StudentRegistration() {
                                 </div>
                                 <div className='w-full'>
                                     <div className='ml-4 text-2xl'>Guardian's middle name</div>
-                                    <input  className='w-full bg-gray-300 rounded-xl px-4 focus:outline-none text-xl py-1' value={GMName} onChange={(e) => setGMName(e.target.value)} type='text' />
+                                    <input className='w-full bg-gray-300 rounded-xl px-4 focus:outline-none text-xl py-1' value={GMName} onChange={(e) => setGMName(e.target.value)} type='text' />
                                 </div>
                             </div>
                             <div className='mt-2 flex gap-5'>
                                 <div className='w-full'>
                                     <div className=' text-2xl flex' required>Guardian's phone no.<h1 className='text-red-600 ml-1'>*</h1></div>
-                                    
+
 
                                     <input
                                         type="tel"
                                         id="telephone"
                                         name="telephone"
-                                        value={GPhone}  
+                                        value={GPhone}
                                         onChange={handleTelephoneChange2}
                                         className="w-full bg-gray-300 rounded-xl px-4 focus:outline-none text-xl py-1"
                                         maxLength={11}
@@ -321,9 +385,15 @@ function StudentRegistration() {
                             </div>
                             <div className='mt-5 flex justify-end'>
                                 <button type="submit" className={`text-xl hover:scale-105 transition-all font-extralight  px-6 rounded-lg text-white py-2 ${userFound ? "bg-blue-700" : "bg-green-700"}`}>
-                                    {userFound ? "Update" : "Register"}
+                                    {loading ? <LoadingButtons /> : <div>
+
+                                        {userFound ? "Update" : "Register"}
+
+                                    </div>}
+
                                 </button>
                             </div>
+
 
                         </div>
 

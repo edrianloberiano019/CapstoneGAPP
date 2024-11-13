@@ -13,6 +13,7 @@ import Leaderboard from "../Class/Leaderboard";
 
 
 
+
 const Dashboard = () => {
   const [selectedView, setSelectedView] = useState('home');
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
@@ -24,6 +25,7 @@ const Dashboard = () => {
 
     return () => unsubscribe(); 
   }, []);
+
  
   return (
     <div>

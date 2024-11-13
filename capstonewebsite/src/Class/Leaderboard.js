@@ -56,19 +56,19 @@ function Leaderboard() {
                     {players.map((player, index) => (
                         <motion.div 
                             key={player.id} 
-                            className={`bg-${index === 0 ? 'white' : '[#ffffff6e]'} p-6 ${index === 0 ? 'rounded-t-lg' : ''}`}
+                            className={`bg-${index === 0 ? 'white' : '[#ffffff6e]'} p-6 ${index === 0 ? 'rounded-lg' : 'text-white gap-y-1'}`}
                             initial={{ opacity: 0, y: 20 }}  
                             animate={{ opacity: 1, y: 0 }}   
                             transition={{ duration: 0.5, delay: index * 0.2 }} 
                         >
-                            <div className="flex justify-between mt-5 mr-16">
-                                <div className="text-black w-[40%] flex items-center">
+                            <div className="flex justify-between mr-16">
+                                <div className=" w-[40%] flex items-center content-center">
                                     <div>{index + 1}</div>
                                     <img className="ml-2 rounded-full w-[50px] h-[50px] drop-shadow-md" alt="profile" src={profile} />
                                     <div className="ml-5">{player.firstName} {player.lastName}</div>
                                 </div>
-                                <div className="flex text-black items-center justify-evenly gap-20 w-[60%]">
-                                    <div className="w-full flex justify-center">{player.score || 0}</div>
+                                <div className="flex items-center justify-evenly gap-x-20 w-[60%]">
+                                    <div className="w-full flex justify-center">{player.puzzleScore || 0}</div>
                                     <div className="w-full flex justify-center">{player.crosswordScore || 0}</div>
                                     <div className="w-full flex justify-center">{player.game3Score || 0}</div>
                                     <div className="w-full flex justify-center">{player.game4Score || 0}</div>

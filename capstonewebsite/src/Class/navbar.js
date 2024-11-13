@@ -19,7 +19,7 @@ function Navbar({ setSelectedView, isAuthenticated, isScrolled }) {
         isAuthenticated ? (
           <div className='flex  font-Londrina bg-[#00712D] absolute top-0 drop-shadow-lg w-full h-[70px] px-10 text-white pt-5 py-5 justify-between'>
             <a href='/Homepage' className='flex justify-center items-center'>
-              <div className='flex text-4xl uppercase'>Touched by God's grace ministry a/g</div>
+              <div className='flex text-4xl uppercase'>GAPP</div>
             </a>
             <div className='text-2xl uppercase'>
               <a className='mx-5' href='/'>ABOUT</a>
@@ -31,9 +31,9 @@ function Navbar({ setSelectedView, isAuthenticated, isScrolled }) {
           </div>
 
         ) : (
-          <div className={`flex font-Londrina content-center items-center fixed top-0 drop-shadow-lg w-full h-[70px] px-10 text-white justify-between transition-all duration-300 ${isScrolled ? 'bg-green-700 text-black' : 'bg-transparent'}`} >
+          <div className={`flex font-Londrina content-center items-center fixed top-0 drop-shadow-lg w-full h-[70px] px-10 text-white justify-between transition-all duration-300 ${isScrolled ? 'bg-green-700 text-black bg-opacity-60 backdrop-blur-lg' : 'bg-transparent'}`} >
             <a href='/Homepage' className='flex justify-center items-center'>
-              <div className='flex text-4xl uppercase'>Touched by God's grace ministry a/g</div>
+              <div className='flex text-4xl uppercase'>GAPP</div>
             </a>
             <div className='text-2xl uppercase'>
               <a className='mx-5' href='/'>ABOUT</a>

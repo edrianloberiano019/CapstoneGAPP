@@ -88,7 +88,7 @@ function AdminSidebar({ setSelectedView }) {
                                 className={`overflow-hidden transition-all duration-300 ease-in-out ${openDropdown2 === "students" ? "max-h-60" : "max-h-0"
                                     }`}
                             >
-                                <button onClick={() => setSelectedView('stureg')}
+                                <button onClick={() => setSelectedView('sp')}
                                     className="block py-1.5 text-left text-xl w-full px-4 pl-8 transition duration-200 hover:bg-[#bbd188]"
                                 >
                                     Student Progress

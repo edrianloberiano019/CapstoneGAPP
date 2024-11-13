@@ -39,7 +39,7 @@ function RegisteredEducators() {
     };
 
     return (
-        <motion.div className='w-full drop-shadow-lg overflow-hidden'
+        <motion.div className='w-full drop-shadow-lg pb-5 overflow-hidden'
             initial={{ opacity: 0, x: 100 }}  
             animate={{ opacity: 1, x: 0 }}   
             transition={{ duratiom: 0.2  }}
@@ -48,7 +48,7 @@ function RegisteredEducators() {
             <div className='rounded-lg overflow-hidden' style={appStyle}>
                 <div className='p-6 flex w-full bg-[#00712d9c] drop-shadow-md'>
                     <div className='flex w-full'>
-                        <div className='bg-[#ffffffe8] h-[500px] py-5 px-10 rounded-lg w-full overflow-auto'>
+                        <div className='bg-[#ffffffe8] pb-5 py-5 px-10 rounded-lg w-full overflow-auto'>
                             <div className='flex justify-between'>
 
                                 <div className='flex justify-center content-center items-center'>
@@ -78,14 +78,13 @@ function RegisteredEducators() {
                                 </div>
                             </div>
 
-                            <div className='border-t-2 pt-1 border-solid flex justify-between border-black mt-6'>
+                            <div className='border-t-2 border-b-2 py-1 gap-5 border-solid flex justify-between border-gray-400 uppercase mt-6'>
                                 <div className='text-2xl w-[20%]'>Name</div>
                                 <div className='text-2xl w-[10%]'>Gender</div>
-                                <div className='text-2xl w-[35%]'>Address</div>
-                                <div className='text-2xl w-[15%]'>Phone no.</div>
+                                <div className='text-2xl w-[25%]'>Address</div>
+                                <div className='text-2xl w-[25%]'>Phone no.</div>
                                 <div className='text-2xl w-[20%]'>Guardian's Name</div>
                                 <div className='text-2xl w-[20%]'>Guardian's Phone</div>
-                                <div className='text-2xl w-[20%]'>Guardian's Landline</div>
                                 <div className='text-2xl w-[20%]'>Password</div>
 
                             </div>
@@ -93,17 +92,17 @@ function RegisteredEducators() {
                             <div>
                                 <ul>
                                     {users.map((user, index) => (
-                                        <li key={index} className='flex justify-between py-2'>
+                                        <li key={index} className='flex gap-5 justify-between py-2'>
                                             <div className='w-[20%] text-2xl overflow-hidden text-ellipsis'>
                                                 {user.firstName} {user.lastName}
                                             </div>
-                                            <div className='w-[10%] text-2xl overflow-hidden text-ellipsis'>
+                                            <div className='w-[10%] first-letter:uppercase text-2xl overflow-hidden text-ellipsis'>
                                                 {user.gender}
                                             </div>
-                                            <div className='w-[35%] text-2xl overflow-hidden text-ellipsis'>
+                                            <div className='w-[25%] text-2xl overflow-hidden text-ellipsis'>
                                                 {user.address}
                                             </div>
-                                            <div className='w-[15%] text-2xl overflow-hidden text-ellipsis'>
+                                            <div className='w-[25%] text-2xl overflow-hidden text-ellipsis'>
                                                 {user.phone}
                                             </div>
                                             <div className='w-[20%] text-2xl overflow-hidden text-ellipsis'>
@@ -111,9 +110,6 @@ function RegisteredEducators() {
                                             </div>
                                             <div className='w-[20%] text-2xl overflow-hidden text-ellipsis'>
                                                 {user.emergencyContact.guardianPhone}
-                                            </div>
-                                            <div className='w-[20%] text-2xl overflow-hidden text-ellipsis'>
-                                                {user.emergencyContact.guardianLandline}
                                             </div>
                                             <div className='w-[20%] text-2xl overflow-hidden text-ellipsis'>
                                                 {user.password}

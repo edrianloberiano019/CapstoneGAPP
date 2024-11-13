@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-const Carousel = ({ images, interval = 3000 }) => {
+const Carouselers = ({ images, interval = 3000 }) => {
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
@@ -30,4 +30,4 @@ const Carousel = ({ images, interval = 3000 }) => {
   );
 };
 
-export default Carousel;
+export default Carouselers;

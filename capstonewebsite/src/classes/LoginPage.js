@@ -13,7 +13,7 @@ import { toast } from "react-toastify";
 import Particles from '../Class/ParticlesComponent';
 import { motion } from 'framer-motion'
 import { BackgroundBeamsWithCollision } from '../Class/background-beams-with-collision';
-
+import LoadingButtons from '../Class/LoadingButtons'
 
 const LoginPage = () => {
     const [loading, setLoading] = useState(false);
@@ -93,20 +93,8 @@ const LoginPage = () => {
                         
                         >
                             <form onSubmit={handleLogin} className='w-full'>
-                                <div className='text-7xl lvl' style={{
-                                    backgroundImage: 'linear-gradient(to right, #fccf46, #ee5343)',
-                                    WebkitBackgroundClip: 'text',
-                                    backgroundClip: 'text',
-                                    color: 'transparent'
-                                }}>LEVEL 2</div>
-                                <div className='mt-8 text-2xl font-semibold'>Login</div>
-
-                                <div className='relative mt-5'>
-                                    <label
-                                        className={`absolute z-10 left-4 transition-all duration-300 ${isEmailFocused || email ? 'top-[-20px] text-sm text-gray-600' : 'top-[-15px] text-base text-black'}`}
-                                    >
-                                        Username or Email:
-                                    </label>
+                                <div className='text-7xl stroke-black stroke-2 mt-10 lvl text-white drop-shadow-md'>LEVEL 2</div>
+                                <div className='relative mt-8'>
                                     <input
                                         className='w-full z-20 rounded pl-2 text-xl drop-shadow-lg border-black border-solid focus:border-transparent focus:outline-none'
                                         type='email'
@@ -115,15 +103,11 @@ const LoginPage = () => {
                                         onBlur={() => setEmailFocused(false)}
                                         onChange={(e) => setEmail(e.target.value)}
                                         required
+                                        placeholder='Email or username'
                                     />
                                 </div>
-                                <div className='flex'>
-                                    <div className='relative mt-6 w-full'>
-                                        <label
-                                            className={`absolute left-4 z-10 transition-all duration-300 ${isPasswordFocused || password ? 'top-[-20px] text-sm text-gray-600' : 'top-[-15px] text-base text-black'}`}
-                                        >
-                                            Password:
-                                        </label>
+                                <div className='flex mt-4'>
+                                    <div className='relative  w-full'>
                                         <input
                                             className='w-full z-20 pl-2 text-xl drop-shadow-lg rounded-l focus:border-transparent focus:outline-none'
                                             type='password'
@@ -132,24 +116,25 @@ const LoginPage = () => {
                                             onBlur={() => setPasswordFocused(false)}
                                             onChange={(e) => setPassword(e.target.value)}
                                             required
+                                            placeholder='Password'
                                         />
 
                                     </div>
-                                    <div className='bg-white z-20 justify-center h-full mt-6 items-center border-l-[1px] border-[#d4d4d4] border-solid text-center rounded-r'>
+                                    <div className='bg-white z-20 justify-center h-full items-center border-l-[1px] border-[#d4d4d4] border-solid text-center rounded-r'>
                                         <button className='flex text-xl px-2 h-full justify-center items-center'>show</button>
                                     </div>
                                 </div>
 
                                 <div className='flex justify-end mt-1 mr-1'>
-                                    <button onClick={toForgotPassword} href=''>Forgot Password?</button>
+                                    <button onClick={toForgotPassword} className='hover:scale-105 transition-all hover:underline'>Forgot Password?</button>
                                 </div>
-                                <div className='z-50 relative'>
+                                <div className='z-50 relative mt-4'>
                                     <button
                                         type='submit'
                                         disabled={loading}
                                         className={`z-30 hover:scale-110 transform transition-all duration-200 tracking-widest mt-2 drop-shadow-lg bg-gradient-to-tr from-[#FCC429] to-[#E5603D] text-[25px] font-bold px-12 py-3 rounded-2xl ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                                     >
-                                        {loading ? 'Logging in...' : 'Login'}
+                                        {loading ? <LoadingButtons /> : 'Login'}
                                     </button>
                                 </div>
                             </form>
