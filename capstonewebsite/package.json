@@ -9,6 +9,7 @@
     "@tsparticles/all": "^3.5.0",
     "@tsparticles/react": "^3.0.0",
     "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
     "firebase": "^10.14.0",
     "framer-motion": "^12.0.0-alpha.0",
     "jquery": "^3.7.1",

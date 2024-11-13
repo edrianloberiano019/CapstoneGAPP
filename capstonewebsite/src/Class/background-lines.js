@@ -2,15 +2,25 @@
 import { cn } from "../utils";
 import { motion } from "framer-motion";
 import React from "react";
+import backgroundImage from '../images/bgapp.jpg'
 
 export const BackgroundLines = ({
   children,
   className,
   svgOptions
 }) => {
+
+  
+
+  const appStyle = {
+    backgroundImage: `url(${backgroundImage})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+};
+
   return (
     (<div
-      className={cn("md:h-screen w-full bg-green-950 h-full", className)}>
+      className={cn("md:h-screen w-full h-full", className)} style={appStyle}>
       <SVG svgOptions={svgOptions} />
       {children}
     </div>)

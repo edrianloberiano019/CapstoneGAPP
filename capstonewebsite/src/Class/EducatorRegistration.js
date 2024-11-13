@@ -1,14 +1,17 @@
 import characterOne from '../images/ch1.png'
 import React, { useState } from 'react'
 import { auth, db } from '../firebase';
-import { setDoc, doc } from "firebase/firestore";
+import { setDoc, doc, updateDoc, collection, where, getDocs, query } from "firebase/firestore";
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { toast } from "react-toastify";
 import { motion } from 'framer-motion';
+import DefaultImage from '../images/ch1.png'
 import backgroundImage from '../images/bg.jpg'
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 
-function StudentRegistration() {
+function EducatorRegistration() {
+    const [searchEmail, setSearchEmail] = useState("");
     const [FirstName, setFName] = useState("");
     const [LastName, setLName] = useState("");
     const [MiddleName, setMName] = useState("NA");
@@ -28,6 +31,11 @@ function StudentRegistration() {
     const [status] = useState("educator");
     const [password, setPasswords] = useState('')
     const [Gtelephone, setTelephone2] = useState('');
+    const [characterOne, setCharacterOne] = useState(DefaultImage);
+    const [imageFile, setImageFile] = useState(null);
+    const [userFound, setUserFound] = useState(false);
+    const [loading, setLoading] = useState(false)
+    const [userId, setUserId] = useState("");
 
 
     const handleTelephoneChange = (e) => {
@@ -42,6 +50,51 @@ function StudentRegistration() {
         setGPhone(value);
     };
 
+    const handleSearch = async () => {
+        try {
+            const q = query(collection(db, "users"), where("email", "==", searchEmail));
+            const querySnapshot = await getDocs(q);
+
+            if (!querySnapshot.empty) {
+                const userDoc = querySnapshot.docs[0];
+                const userData = userDoc.data();
+                if (userData.role === "educator") {
+                    setUserId(userDoc.id);
+                    setFName(userData.firstName || "");
+                    setLName(userData.lastName || "");
+                    setMName(userData.middleName || "NA");
+                    setGender(userData.gender || "Male");
+                    setDateBirth(userData.dateOfBirth || "");
+                    setEmail(userData.email || "");
+                    setPhone(userData.phone || "");
+                    setAddress(userData.address || "");
+                    setGFName(userData.emergencyContact?.guardianFirstName || "");
+                    setGLName(userData.emergencyContact?.guardianLastName || "");
+                    setGMName(userData.emergencyContact?.guardianMiddleName || "NA");
+                    setGPhone(userData.emergencyContact?.guardianPhone || "");
+                    setGEmail(userData.emergencyContact?.guardianEmail || "");
+                    setGLandline(userData.emergencyContact?.guardianLandline || "NA");
+
+
+                    const storage = getStorage();
+                    const imageRef = ref(storage, `images/${userData.email}.jpg`);
+                    const imageUrl = await getDownloadURL(imageRef);
+                    setCharacterOne(imageUrl);
+                    setUserFound(true);
+                } else {
+                    setUserFound(false);
+                    toast.error("No educator account found!", { position: "top-center", autoClose: 3000 });
+                }
+            } else {
+                setUserFound(false);
+                toast.error("No educator account found!", { position: "top-center", autoClose: 3000 });
+            }
+        } catch (error) {
+            console.error("Error searching user:", error);
+            toast.error("Error searching user!", { position: "top-center", autoClose: 3000 });
+        }
+    };
+
     
 
 
@@ -50,23 +103,25 @@ function StudentRegistration() {
 
     const educatorRegister = async (e) => {
         e.preventDefault();
-
+        setLoading(true)
         try {
-
-
-            const userCredential = await createUserWithEmailAndPassword(auth, Email, Password)
-            const user = userCredential.user
-
-            if (password !== Password) {
-                toast.error("The password is not match.", {
-                    position: "top-center",
-                    autoClose: "5000"
-                });
+            if (!imageFile && !characterOne) {
+                toast.error("Please upload an image before saving.", { position: "top-center", autoClose: 5000 });
+                setLoading(false)
 
                 return;
-            } else {
+            }
 
-                await setDoc(doc(db, "users", user.uid), {
+            if (userFound) {
+                if (password !== Password) {
+                    toast.error("The passwords do not match.", { position: "top-center", autoClose: 5000 });
+                    setLoading(false)
+
+                    return;
+                }
+
+                const userDocRef = doc(db, "users", userId);
+                await updateDoc(userDocRef, {
                     firstName: FirstName,
                     lastName: LastName,
                     middleName: MiddleName,
@@ -85,35 +140,83 @@ function StudentRegistration() {
                         guardianEmail: GEmail,
                         guardianLandline: GLandline
                     }
+                    
                 });
-                toast.success("Successfully Registered!", {
-                    position: "top-center",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                });
-                console.log("registered")
+
+                if (imageFile) {
+                    const storage = getStorage();
+                    const storageRef = ref(storage, `images/${Email}.jpg`);
+                    await uploadBytes(storageRef, imageFile);
+                    const imageUrl = await getDownloadURL(storageRef);
+                    setCharacterOne(imageUrl);
+                    toast.success('Image updated successfully!', { position: "top-right", autoClose: 3000 });
+                }
+
+                toast.success("User information updated successfully!", { position: "top-right", autoClose: 5000 });
+                setUserFound(false);
+                setLoading(false)
+
+            } else {
+                if (password !== Password) {
+                    toast.error("The passwords do not match.", { position: "top-right", autoClose: 5000 });
+                    return;
+                } else {
+                    const userCredential = await createUserWithEmailAndPassword(auth, Email, Password);
+                    const user = userCredential.user;
+                    await setDoc(doc(db, "users", user.uid), {
+                        firstName: FirstName,
+                        lastName: LastName,
+                        middleName: MiddleName,
+                        gender: Gender,
+                        dateOfBirth: DateBirth,
+                        email: Email,
+                        phone: Phone,
+                        address: Address,
+                        password: Password,
+                        role: status,
+                        score: 0,
+                        puzzleScore: 0,
+                        emergencyContact: {
+                            guardianFirstName: GFName,
+                            guardianLastName: GLName,
+                            guardianMiddleName: GMName,
+                            guardianPhone: GPhone,
+                            guardianEmail: GEmail,
+                            guardianLandline: GLandline
+                        }
+                    });
+
+                    if (imageFile) {
+                        const storage = getStorage();
+                        const storageRef = ref(storage, `images/${Email}.jpg`);
+                        await uploadBytes(storageRef, imageFile);
+                        const imageUrl = await getDownloadURL(storageRef);
+                        setCharacterOne(imageUrl);
+                        toast.success('Image saved successfully!', { position: "top-right", autoClose: 3000, delay: 200 });
+                    }
+
+                    toast.success("Successfully registered!", { position: "top-right", autoClose: 5000 });
+                    setLoading(false)
+                }
             }
-
         } catch (error) {
-            toast.error(error.message, {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-            });
-            console.error('Error', error)
-
+            toast.info('The image is set to default.', { position: "top-center", autoClose: 5000 });
+            setLoading(false)
         }
-
-    }
+    };
 
     const appStyle = {
         backgroundImage: `url(${backgroundImage})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
+    };
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setImageFile(file);
+            setCharacterOne(URL.createObjectURL(file));
+        }
     };
     
     return (
@@ -126,29 +229,47 @@ function StudentRegistration() {
                 <div className='flex p-6  bg-[#00712d9c]  w-full'>
 
 
-                    <div className='flex w-[20%]'>
+                <div className='flex w-[20%]'>
                         <div className='w-full mr-6'>
-                            <div className='w-full  mt-10'>
-                                <div className='flex mr-6 justify-center content-center items-center w-full'>
-                                    <img className='rounded-full drop-shadow-lg border-solid border-[#2db162]  border-4' src={characterOne} alt='avatar' />
-
+                            <div className='w-full mt-10'>
+                                <div className='flex mr-6 justify-center items-center w-full'>
+                                    <img className='rounded-full text-center content-center max-w-[250px] max-h-[250px] drop-shadow-lg border-solid border-[#2db162] border-4' src={characterOne} alt='avatar' />
                                 </div>
                             </div>
-                            <div className='w-full flex justify-center mt-5 drop-shadow-lg '>
-                                <button className='text-base hover:scale-105 transition-all font-extralight bg-blue-700 px-3 rounded-lg text-white py-1'>Upload photo</button>
-
+                            <div className='w-full flex items-center justify-center mt-5 text-center drop-shadow-lg'>
+                                <input
+                                    id='fileInput'
+                                    className='text-xl text-center'
+                                    style={{ display: 'none' }}
+                                    type='file'
+                                    accept='image/*'
+                                    onChange={handleFileChange}
+                                />
+                                <label className='cursor-pointer text-xl bg-blue-400 text-black hover:text-white hover:bg-blue-700 px-5 py-2 rounded-md hover: ' htmlFor='fileInput'>
+                                    Upload a file
+                                </label>
                             </div>
-
                         </div>
                     </div>
 
                     <form onSubmit={educatorRegister} className='flex w-[80%]'>
                         <div className='bg-[#ffffffe8] py-5 px-10 rounded-lg w-full'>
-                            <div className=''>Educator Registration</div>
+                            <div className='flex justify-between'>
+                                <div>Educator Registration</div>
+                                <div className='flex items-center bg-gray-300 rounded-xl'>
+                                    <input className='px-5 text-2xl bg-transparent outline-none' type='search' value={searchEmail} placeholder='Search' onChange={(e) => setSearchEmail(e.target.value)} />
+                                    <button className='text-2xl px-3 ' type='button' onClick={handleSearch}>
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+                                            <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z" clip-rule="evenodd" />
+                                        </svg>
+
+                                    </button>
+                                </div>
+                            </div>
                             <div className='mt-2 flex gap-5'>
                                 <div className='w-full'>
                                     <div className='ml- flex text-2xl'>First name<h1 className='text-red-600 ml-1'>*</h1></div>
-                                    <input className='w-full bg-gray-300 rounded-xl px-4 focus:outline-none text-xl py-1' required onChange={(e) => setFName(e.target.value)} type='text' />
+                                    <input className='w-full bg-gray-300 rounded-xl px-4 focus:outline-none text-xl py-1' value={FirstName} required onChange={(e) => setFName(e.target.value)} type='text' />
                                 </div>
                                 <div className='w-full'>
                                     <div className='flex ml-4 text-2xl'>Last name<h1 className='text-red-600 ml-1'>*</h1></div>
@@ -272,4 +393,4 @@ function StudentRegistration() {
     )
 }
 
-export default StudentRegistration
+export default EducatorRegistration

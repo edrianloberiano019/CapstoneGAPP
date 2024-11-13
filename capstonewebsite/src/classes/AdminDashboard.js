@@ -39,7 +39,7 @@ const AdminDashboard = () => {
               {selectedView === 'stureg' && <h1 className="text-3xl w-full h-full overflow-hidden"><StudentRegistration /></h1>}
               {selectedView === 'regstu' && <h1 className="text-3xl w-full "><RegisteredStudents /></h1>}
               {selectedView === 'edureg' && <h1 className="text-3xl w-full overflow-hidden"><EducatorRegistration /></h1>}
-              {selectedView === 'regedu' && <h1 className="text-3xl w-full overflow-hidden"><RegisteredEducators /></h1>}
+              {selectedView === 'regedu' && <h1 className="text-3xl w-full "><RegisteredEducators /></h1>}
               {selectedView === 'cal' && <h1 className="text-3xl w-full">
                 <AuthProvider>
                   <Calendar />
@@ -48,7 +48,7 @@ const AdminDashboard = () => {
               {selectedView === 'leaderboard' && <h1 className="text-3xl w-full"><Leaderboard /></h1>}
               {selectedView === 'bg' && <h1 className="text-3xl w-full overflow-hidden"></h1>}
               {selectedView === 'users' && <h1 className="text-3xl"><ModalBody /></h1>}
-              {selectedView === 'sp' && <h1 className="text-3xl w-full overflow-hidden"><StudentProgres /></h1>}
+              {selectedView === 'sp' && <h1 className="text-3xl w-full"><StudentProgres /></h1>}
             </div>
           </div>
         </div>
