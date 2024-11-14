@@ -10,7 +10,8 @@ import { auth } from '../firebase';
 import Calendar from "../Class/Calendar";
 import { AuthProvider } from '../Class/authContext'; 
 import Leaderboard from "../Class/Leaderboard";
-
+import StudentProgres from "../Class/StudentProgres";
+import backgroundImage from "../images/bgforweb.png"
 
 
 
@@ -26,6 +27,14 @@ const Dashboard = () => {
     return () => unsubscribe(); 
   }, []);
 
+
+  const appStyle = {
+    backgroundImage: `url(${backgroundImage})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+
+
+};
  
   return (
     <div>
@@ -33,13 +42,13 @@ const Dashboard = () => {
         <Navbar setSelectedView={setSelectedView} isAuthenticated={isUserLoggedIn} />
       </div>
       <div className='flex z-20 w-full h-full '>
-        <div className="sticky top-0 h-screen w-72 overflow-y-hidden overflow-x-hidden">
+        <div className="sticky top-0 h-screen w-72 drop-shadow-xl overflow-y-hidden overflow-x-hidden">
           <Sidebar setSelectedView={setSelectedView} />
         </div>
-        <div className='flex bg-[#C0EBA6]  w-full h-screen pt-20 p-5 overflow-x-hidden overflow-y-auto'>
+        <div className='flex  w-full h-screen pt-20 p-5 overflow-x-hidden overflow-y-auto' style={appStyle}>
           {selectedView === 'home' && <h1 className="text-3xl w-full overflow-hidden"><DashboardChild setSelectedView={setSelectedView} /></h1>}
           {selectedView === 'stureg' && <h1 className="text-3xl w-full overflow-hidden"><StudentRegistration /></h1>}
-          {selectedView === 'regstu' && <h1 className="text-3xl w-full overflow-hidden"><RegisteredStudents /></h1>}
+          {selectedView === 'regstu' && <h1 className="text-3xl w-full"><RegisteredStudents /></h1>}
           {selectedView === 'edureg' && <h1 className="text-3xl w-full overflow-hidden"><EducatorRegistration /></h1>}
           {selectedView === 'regedu' && <h1 className="text-3xl w-full overflow-hidden"><RegisteredEducators /></h1>}
           {selectedView === 'lead' && <h1 className="text-3xl w-full "><Leaderboard /></h1>}
@@ -50,7 +59,7 @@ const Dashboard = () => {
             </AuthProvider></h1>}
           {selectedView === 'supplier' && <h1 className="text-3xl">Supplier List</h1>}
           {selectedView === 'customer' && <h1 className="text-3xl">ha</h1>}
-          {selectedView === 'users' && <h1 className="text-3xl">Users Section</h1>}
+          {selectedView === 'prog' && <h1 className="text-3xl w-full"><StudentProgres /></h1>}
         </div>
       </div>
     </div>

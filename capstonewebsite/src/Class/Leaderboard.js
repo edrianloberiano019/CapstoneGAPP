@@ -1,13 +1,24 @@
 import React, { useEffect, useState } from "react";
-import profile from '../images/ch1.png';
 import { db } from '../firebase';
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
+import { getStorage, ref, getDownloadURL } from "firebase/storage";
 import Loading from "./Loading";
 import { motion } from "framer-motion";
 
 function Leaderboard() {
     const [players, setPlayers] = useState([]);
     const [loading, setLoading] = useState(true);
+    const storage = getStorage();
+
+    const fetchProfileImage = async (email) => {
+        try {
+            const imageRef = ref(storage, `images/${email}.jpg`);
+            return await getDownloadURL(imageRef);
+        } catch (error) {
+            console.error("Error fetching profile image:", error);
+            return null; 
+        }
+    };
 
     useEffect(() => {
         const fetchPlayers = async () => {
@@ -17,12 +28,11 @@ function Leaderboard() {
                 const playersQuery = query(playersCollection, orderBy("score", "desc"));
                 const snapshot = await getDocs(playersQuery);
 
-                const playersData = snapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data()
+                const playersData = await Promise.all(snapshot.docs.map(async (doc) => {
+                    const player = doc.data();
+                    const profileImage = await fetchProfileImage(player.email);
+                    return { id: doc.id, ...player, profileImage };
                 }));
-
-                console.log("Fetched Players Data:", playersData);
 
                 setPlayers(playersData);
             } catch (error) {
@@ -34,7 +44,7 @@ function Leaderboard() {
 
         fetchPlayers();
     }, []);
-    
+
     return (
         <div className="pb-5">
             <div className="text-center text-4xl uppercase pb-1">Leaderboard</div>
@@ -62,9 +72,13 @@ function Leaderboard() {
                             transition={{ duration: 0.5, delay: index * 0.2 }} 
                         >
                             <div className="flex justify-between mr-16">
-                                <div className=" w-[40%] flex items-center content-center">
+                                <div className="w-[40%] flex items-center content-center">
                                     <div>{index + 1}</div>
-                                    <img className="ml-2 rounded-full w-[50px] h-[50px] drop-shadow-md" alt="profile" src={profile} />
+                                    <img 
+                                        className="ml-2 rounded-full w-[50px] h-[50px] drop-shadow-md" 
+                                        alt="profile" 
+                                        src={player.profileImage || '/defaultProfile.png'} 
+                                    />
                                     <div className="ml-5">{player.firstName} {player.lastName}</div>
                                 </div>
                                 <div className="flex items-center justify-evenly gap-x-20 w-[60%]">

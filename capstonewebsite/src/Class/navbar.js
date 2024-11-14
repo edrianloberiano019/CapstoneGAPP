@@ -31,7 +31,7 @@ function Navbar({ setSelectedView, isAuthenticated, isScrolled }) {
           </div>
 
         ) : (
-          <div className={`flex font-Londrina content-center items-center fixed top-0 drop-shadow-lg w-full h-[70px] px-10 text-white justify-between transition-all duration-300 ${isScrolled ? 'bg-green-700 text-black bg-opacity-60 backdrop-blur-lg' : 'bg-transparent'}`} >
+          <div className={`flex font-Londrina content-center items-center fixed top-0 drop-shadow-lg w-full duration-700 px-10 text-white justify-between transition-all ${isScrolled ? 'bg-green-700 h-[70px] text-black bg-opacity-60 backdrop-blur-lg' : 'h-[50px] bg-transparent'}`} >
             <a href='/Homepage' className='flex justify-center items-center'>
               <div className='flex text-4xl uppercase'>GAPP</div>
             </a>

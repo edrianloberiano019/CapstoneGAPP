@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../firebase';
 import backgroundImage from '../images/bg.jpg';
 import Loading from './Loading';
-import {motion} from 'framer-motion'
+import { motion } from 'framer-motion';
 
 function RegisteredEducators() {
     const [users, setUsers] = useState([]);
+    const [filteredUsers, setFilteredUsers] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [isConfirmDelete, setIsConfirmDelete] = useState(false);
+    const [selectedUser, setSelectedUser] = useState(null); 
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -16,17 +20,33 @@ function RegisteredEducators() {
             querySnapshot.forEach((doc) => {
                 const userData = doc.data();
                 if (userData.role === 'student') {
-                    educatorsList.push(userData);
+                    educatorsList.push({ id: doc.id, ...userData });
                 }
             });
             setUsers(educatorsList);
+            setFilteredUsers(educatorsList);
             setLoading(false);
         };
 
         fetchUsers();
     }, []);
 
-    
+    useEffect(() => {
+        const filtered = users.filter((user) =>
+            `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+        setFilteredUsers(filtered);
+    }, [searchQuery, users]);
+
+    const handleDelete = async () => {
+        if (selectedUser) {
+            await deleteDoc(doc(db, 'users', selectedUser.id)); 
+            setUsers(users.filter(user => user.id !== selectedUser.id));
+            setFilteredUsers(filteredUsers.filter(user => user.id !== selectedUser.id));
+            setIsConfirmDelete(false); 
+            setSelectedUser(null); 
+        }
+    };
 
     if (loading) {
         return <Loading />;
@@ -42,24 +62,23 @@ function RegisteredEducators() {
         <motion.div className='w-full drop-shadow-lg pb-5 overflow-hidden'
             initial={{ opacity: 0, x: 100 }}  
             animate={{ opacity: 1, x: 0 }}   
-            transition={{ duratiom: 0.2  }}
-        
+            transition={{ duration: 0.2 }}
         >
             <div className='rounded-lg overflow-hidden' style={appStyle}>
                 <div className='p-6 flex w-full bg-[#00712d9c] drop-shadow-md'>
                     <div className='flex w-full'>
                         <div className='bg-[#ffffffe8] pb-5 py-5 px-10 rounded-lg w-full overflow-auto'>
                             <div className='flex justify-between'>
-
                                 <div className='flex justify-center content-center items-center'>
                                     <div className='text-4xl'>Registered Students</div>
-
                                 </div>
                                 <div className=''>
                                     <input
                                         className='bg-gray-300 text-2xl focus:outline-none rounded-l-lg px-4 py-1'
-                                        placeholder='Search'
+                                        placeholder='Search name'
                                         type='search'
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
                                     />
                                     <button className='justify-center content-center align-middle bg-gray-300 h-full px-4 rounded-r-lg'>
                                         <svg
@@ -85,13 +104,14 @@ function RegisteredEducators() {
                                 <div className='text-2xl w-[25%]'>Phone no.</div>
                                 <div className='text-2xl w-[20%]'>Guardian's Name</div>
                                 <div className='text-2xl w-[20%]'>Guardian's Phone</div>
-                                <div className='text-2xl w-[20%]'>Password</div>
+                                <div className='text-2xl w-[15%]'>Password</div>
+                                <div className='text-2xl w-[5%]'></div>
 
                             </div>
 
                             <div>
                                 <ul>
-                                    {users.map((user, index) => (
+                                    {filteredUsers.map((user, index) => (
                                         <li key={index} className='flex gap-5 justify-between py-2'>
                                             <div className='w-[20%] text-2xl overflow-hidden text-ellipsis'>
                                                 {user.firstName} {user.lastName}
@@ -111,13 +131,46 @@ function RegisteredEducators() {
                                             <div className='w-[20%] text-2xl overflow-hidden text-ellipsis'>
                                                 {user.emergencyContact.guardianPhone}
                                             </div>
-                                            <div className='w-[20%] text-2xl overflow-hidden text-ellipsis'>
+                                            <div className='w-[15%] text-2xl overflow-hidden text-ellipsis'>
                                                 {user.password}
                                             </div>
+                                            <button 
+                                                className='w-[5%] text-red-700 flex content-start text-2xl overflow-hidden text-ellipsis'
+                                                onClick={() => {
+                                                    setSelectedUser(user);
+                                                    setIsConfirmDelete(true);
+                                                }}
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+                                                    <path fill-rule="evenodd" d="M16.5 4.478v.227a48.816 48.816 0 0 1 3.878.512.75.75 0 1 1-.256 1.478l-.209-.035-1.005 13.07a3 3 0 0 1-2.991 2.77H8.084a3 3 0 0 1-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 0 1-.256-1.478A48.567 48.567 0 0 1 7.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 0 1 3.369 0c1.603.051 2.815 1.387 2.815 2.951Zm-6.136-1.452a51.196 51.196 0 0 1 3.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 0 0-6 0v-.113c0-.794.609-1.428 1.364-1.452Zm-.355 5.945a.75.75 0 1 0-1.5.058l.347 9a.75.75 0 1 0 1.499-.058l-.346-9Zm5.48.058a.75.75 0 1 0-1.498-.058l-.347 9a.75.75 0 1 0 1.498.058l.347-9Z" clip-rule="evenodd" />
+                                                </svg>
+                                            </button>
                                         </li>
                                     ))}
                                 </ul>
                             </div>
+
+                            {isConfirmDelete && (
+                                <div className='fixed inset-0 flex justify-center items-center bg-gray-700 bg-opacity-50'>
+                                    <div className='bg-white p-6 rounded-xl'>
+                                        <h2 className='text-xl mb-4'>Are you sure you want to delete this user?</h2>
+                                        <div className='flex justify-end'>
+                                            <button
+                                                onClick={() => setIsConfirmDelete(false)}
+                                                className='bg-gray-500 text-white px-4 py-2 rounded mr-2'
+                                            >
+                                                Cancel
+                                            </button>
+                                            <button
+                                                onClick={handleDelete}
+                                                className='bg-red-600 text-white px-4 py-2 rounded'
+                                            >
+                                                Confirm
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

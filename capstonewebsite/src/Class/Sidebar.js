@@ -43,16 +43,15 @@ function Sidebar({ setSelectedView }) {
                             className={`overflow-hidden transition-all duration-300 ease-in-out ${openDropdown === "students" ? "max-h-100" : "max-h-0"
                                 }`}
                         >
+                            <button onClick={() => setSelectedView('prog')}
+                                className="block py-1.5 text-left text-xl w-full px-4 pl-8 transition duration-200 hover:bg-[#bbd188]"
+                            >
+                                Student Progress
+                            </button>
                             <button onClick={() => setSelectedView('stureg')}
                                 className="block py-1.5 text-left text-xl w-full px-4 pl-8 transition duration-200 hover:bg-[#bbd188]"
                             >
                                 Student Registration
-                            </button>
-                            <button onClick={() => setSelectedView('regstu') }
-                                href="/"
-                                className="block py-1.5 text-left text-xl w-full px-4 pl-8 transition duration-200 hover:bg-[#bbd188]"
-                            >
-                                Student Progress
                             </button>
                             <button onClick={() => setSelectedView('regstu') }
                                 href="/"

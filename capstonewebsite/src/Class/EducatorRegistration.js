@@ -54,10 +54,11 @@ function EducatorRegistration() {
         try {
             const q = query(collection(db, "users"), where("email", "==", searchEmail));
             const querySnapshot = await getDocs(q);
-
+    
             if (!querySnapshot.empty) {
                 const userDoc = querySnapshot.docs[0];
                 const userData = userDoc.data();
+    
                 if (userData.role === "educator") {
                     setUserId(userDoc.id);
                     setFName(userData.firstName || "");
@@ -74,12 +75,12 @@ function EducatorRegistration() {
                     setGPhone(userData.emergencyContact?.guardianPhone || "");
                     setGEmail(userData.emergencyContact?.guardianEmail || "");
                     setGLandline(userData.emergencyContact?.guardianLandline || "NA");
-
-
+    
                     const storage = getStorage();
                     const imageRef = ref(storage, `images/${userData.email}.jpg`);
                     const imageUrl = await getDownloadURL(imageRef);
                     setCharacterOne(imageUrl);
+                    
                     setUserFound(true);
                 } else {
                     setUserFound(false);
@@ -94,6 +95,7 @@ function EducatorRegistration() {
             toast.error("Error searching user!", { position: "top-center", autoClose: 3000 });
         }
     };
+    
 
     
 

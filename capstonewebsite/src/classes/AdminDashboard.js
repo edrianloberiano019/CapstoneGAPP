@@ -12,6 +12,7 @@ import Leaderboard from "../Class/Leaderboard";
 import { ModalBody } from "../Class/ModalBody";
 import { AuthProvider } from "../Class/authContext";
 import StudentProgres from "../Class/StudentProgres";
+import backgroundImage from "../images/bgforweb.png"
 
 const AdminDashboard = () => {
   const [selectedView, setSelectedView] = useState('home');
@@ -23,7 +24,14 @@ const AdminDashboard = () => {
 
     return () => unsubscribe();
   }, []);
+  
+  const appStyle = {
+    backgroundImage: `url(${backgroundImage})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
 
+
+};
 
   return (
         <div>
@@ -31,10 +39,10 @@ const AdminDashboard = () => {
             <Navbar setSelectedView={setSelectedView} isAuthenticated={isUserLoggedIn} />
           </div>
           <div className='flex z-10 w-full h-screen'>
-            <div className="sticky top-0 h-screen w-72 overflow-y-hidden overflow-x-hidden">
+            <div className="sticky top-0 h-screen w-72 overflow-y-hidden drop-shadow-xl overflow-x-hidden">
               <AdminSidebar setSelectedView={setSelectedView} />
             </div>
-            <div className='flex bg-[#C0EBA6]  pt-20 w-full h-screen p-5 overflow-x-hidden overflow-y-auto'>
+            <div className='flex pt-20 w-full h-screen p-5 overflow-x-hidden overflow-y-auto' style={appStyle}>
               {selectedView === 'home' && <h1 className="text-3xl w-full h-full"><AdminAnnouncement /></h1>}
               {selectedView === 'stureg' && <h1 className="text-3xl w-full h-full overflow-hidden"><StudentRegistration /></h1>}
               {selectedView === 'regstu' && <h1 className="text-3xl w-full "><RegisteredStudents /></h1>}

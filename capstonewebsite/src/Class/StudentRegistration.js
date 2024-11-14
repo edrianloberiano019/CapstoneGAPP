@@ -124,8 +124,8 @@ function StudentRegistration() {
                         address: Address,
                         password: Password,
                         role: status,
-                        score: 0,
                         puzzleScore: 0,
+                        score: 0,
                         emergencyContact: {
                             guardianFirstName: GFName,
                             guardianLastName: GLName,
@@ -150,7 +150,7 @@ function StudentRegistration() {
                 }
             }
         } catch (error) {
-            toast.info('The image is set to default.', { position: "top-center", autoClose: 5000 });
+            toast.info(error, { position: "top-center", autoClose: 5000 });
             setLoading(false)
         }
     };

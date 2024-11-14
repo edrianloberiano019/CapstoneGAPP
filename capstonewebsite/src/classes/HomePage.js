@@ -10,9 +10,10 @@ import { BackgroundBeamsWithCollision } from '../Class/background-beams-with-col
 import Announcement from '../Class/Announcement';
 import { ContainerScroll } from '../Class/ContainerScroll';
 import { FlipWords } from '../Class/flip-words';
-import{ BackgroundLines }from '../Class/background-lines'
-import {Boxes} from '../Class/background-boxes'
+import { BackgroundLines } from '../Class/background-lines'
+import { Boxes } from '../Class/background-boxes'
 import ParticlesComponent from '../Class/ParticlesComponent'
+import Footer from '../Class/Footer';
 
 
 const HomePage = () => {
@@ -87,23 +88,27 @@ const HomePage = () => {
 
                 </div>
                 <div className='w-full z-30 relative '>
-                    
-                    <BackgroundLines className='z-30 '>
-                    
-                    <div className='absolute top-0 mt-96 w-full text-7xl text-center text-white'>
-                        <div className='flex text-center justify-center transition-all'>
-                            <div className='transition-all mr-1'>Experience the </div>
-                            <FlipWords words={words} />
+
+                    <BackgroundLines className='z-30 overflow-hidden '>
+
+                        <div className='absolute top-0 mt-96 w-full text-7xl text-center text-white'>
+                            <div className='flex text-center justify-center transition-all'>
+                                <div className='transition-all mr-1'>Experience the </div>
+                                <FlipWords words={words} />
+                            </div>
+                            <div>
+                                <div>of our stunning application.</div>
+                            </div>
+                            <div className='text-xl mt-5'>Download our application through this link: </div>
                         </div>
-                        <div>
-                            <div>of our stunning application.</div>
-                        </div>
-                        <div className='text-xl mt-5'>Download our application through this link: </div>
-                    </div>
 
                     </BackgroundLines>
 
                 </div>
+            </div>
+            <div className='bg-black'>
+                <Footer />
+
             </div>
         </div>
     );
