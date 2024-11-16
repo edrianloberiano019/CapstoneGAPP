@@ -235,7 +235,7 @@ function StudentRegistration() {
                         <div className='w-full mr-6'>
                             <div className='w-full mt-10'>
                                 <div className='flex mr-6 justify-center items-center w-full'>
-                                    <img className='rounded-full text-center content-center max-w-[250px] max-h-[250px] drop-shadow-lg border-solid border-[#2db162] border-4' src={characterOne} alt='avatar' />
+                                    <img className='rounded-full text-center content-center min-w-[250px] min-h-[250px] max-w-[250px] max-h-[250px] drop-shadow-lg border-solid border-[#2db162] border-4' src={characterOne} alt='avatar' />
                                 </div>
                             </div>
                             <div className='w-full flex items-center justify-center mt-5 text-center drop-shadow-lg'>

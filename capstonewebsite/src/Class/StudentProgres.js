@@ -52,7 +52,6 @@ function StudentProgres() {
     );
 
     const handleDownload = () => {
-        // Prepare the data for Excel export
         const exportData = filteredPlayers.map(player => ({
             Name: `${player.firstName} ${player.lastName}`,
             Puzzle: `${Math.round(player.puzzleProgress * 100)}%`,
@@ -60,12 +59,10 @@ function StudentProgres() {
             Journal: `${Math.round(player.journalProgress || 0)}%`,
         }));
 
-        // Create a new worksheet and workbook
         const ws = XLSX.utils.json_to_sheet(exportData);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Student Progress");
 
-        // Export the workbook to Excel
         XLSX.writeFile(wb, "student_progress.xlsx");
     };
 
