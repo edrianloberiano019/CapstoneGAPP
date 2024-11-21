@@ -14,7 +14,7 @@ function StudentRegistration() {
     const [searchEmail, setSearchEmail] = useState("");
     const [FirstName, setFName] = useState("");
     const [LastName, setLName] = useState("");
-    const [MiddleName, setMName] = useState("NA");
+    const [MiddleName, setMName] = useState("--");
     const [Gender, setGender] = useState("Male");
     const [DateBirth, setDateBirth] = useState("");
     const [Email, setEmail] = useState("");
@@ -26,8 +26,8 @@ function StudentRegistration() {
     const [GMName, setGMName] = useState("NA");
     const [GPhone, setGPhone] = useState("");
     const [GEmail, setGEmail] = useState("");
-    const [GLandline, setGLandline] = useState("NA")
-    const [telephone, setTelephone] = useState('');
+    const [GLandline, setGLandline] = useState("--")
+    const [telephone, setTelephone] = useState('--');
     const [password, setPasswords] = useState('')
     const [status] = useState("student");
     const [Gtelephone, setTelephone2] = useState('');
@@ -53,23 +53,41 @@ function StudentRegistration() {
 
     const studentRegister = async (e) => {
         e.preventDefault();
-        setLoading(true)
+        setLoading(true);
+    
         try {
-            if (!imageFile && !characterOne) {
-                toast.error("Please upload an image before saving.", { position: "top-center", autoClose: 5000 });
-                setLoading(false)
-
+            const currentDate = new Date();
+            const selectedDate = new Date(DateBirth);
+    
+            if (selectedDate > currentDate) {
+                toast.error("Birthdate cannot be in the future.", { position: "top-center", autoClose: 5000 });
+                setLoading(false);
                 return;
             }
-
+    
+            const ageDiffMs = currentDate - selectedDate;
+            const ageDate = new Date(ageDiffMs); 
+            const age = Math.abs(ageDate.getUTCFullYear() - 1970);
+    
+            if (age < 10) {
+                toast.error("User must be at least 10 years old to register.", { position: "top-center", autoClose: 5000 });
+                setLoading(false);
+                return;
+            }
+    
+            if (!imageFile && !characterOne) {
+                toast.error("Please upload an image before saving.", { position: "top-center", autoClose: 5000 });
+                setLoading(false);
+                return;
+            }
+    
             if (userFound) {
                 if (password !== Password) {
                     toast.error("The passwords do not match.", { position: "top-center", autoClose: 5000 });
-                    setLoading(false)
-
+                    setLoading(false);
                     return;
                 }
-
+    
                 const userDocRef = doc(db, "users", userId);
                 await updateDoc(userDocRef, {
                     firstName: FirstName,
@@ -90,70 +108,72 @@ function StudentRegistration() {
                         guardianEmail: GEmail,
                         guardianLandline: GLandline
                     }
-                    
                 });
-
+    
                 if (imageFile) {
                     const storage = getStorage();
                     const storageRef = ref(storage, `images/${Email}.jpg`);
                     await uploadBytes(storageRef, imageFile);
                     const imageUrl = await getDownloadURL(storageRef);
                     setCharacterOne(imageUrl);
-                    toast.success('Image updated successfully!', { position: "top-right", autoClose: 3000 });
+                    toast.success("Image updated successfully!", { position: "top-right", autoClose: 3000 });
                 }
-
+    
                 toast.success("User information updated successfully!", { position: "top-right", autoClose: 5000 });
                 setUserFound(false);
-                setLoading(false)
-
+                setLoading(false);
             } else {
                 if (password !== Password) {
                     toast.error("The passwords do not match.", { position: "top-right", autoClose: 5000 });
+                    setLoading(false);
                     return;
-                } else {
-                    const userCredential = await createUserWithEmailAndPassword(auth, Email, Password);
-                    const user = userCredential.user;
-                    await setDoc(doc(db, "users", user.uid), {
-                        firstName: FirstName,
-                        lastName: LastName,
-                        middleName: MiddleName,
-                        gender: Gender,
-                        dateOfBirth: DateBirth,
-                        email: Email,
-                        phone: Phone,
-                        address: Address,
-                        password: Password,
-                        role: status,
-                        puzzleScore: 0,
-                        score: 0,
-                        emergencyContact: {
-                            guardianFirstName: GFName,
-                            guardianLastName: GLName,
-                            guardianMiddleName: GMName,
-                            guardianPhone: GPhone,
-                            guardianEmail: GEmail,
-                            guardianLandline: GLandline
-                        }
-                    });
-
-                    if (imageFile) {
-                        const storage = getStorage();
-                        const storageRef = ref(storage, `images/${Email}.jpg`);
-                        await uploadBytes(storageRef, imageFile);
-                        const imageUrl = await getDownloadURL(storageRef);
-                        setCharacterOne(imageUrl);
-                        toast.success('Image saved successfully!', { position: "top-right", autoClose: 3000, delay: 200 });
-                    }
-
-                    toast.success("Successfully registered!", { position: "top-right", autoClose: 5000 });
-                    setLoading(false)
                 }
+    
+                const userCredential = await createUserWithEmailAndPassword(auth, Email, Password);
+                const user = userCredential.user;
+    
+                await setDoc(doc(db, "users", user.uid), {
+                    firstName: FirstName,
+                    lastName: LastName,
+                    middleName: MiddleName,
+                    gender: Gender,
+                    dateOfBirth: DateBirth,
+                    email: Email,
+                    phone: Phone,
+                    address: Address,
+                    password: Password,
+                    role: status,
+                    puzzleScore: 0,
+                    score: 0,
+                    emergencyContact: {
+                        guardianFirstName: GFName,
+                        guardianLastName: GLName,
+                        guardianMiddleName: GMName,
+                        guardianPhone: GPhone,
+                        guardianEmail: GEmail,
+                        guardianLandline: GLandline
+                    }
+                });
+    
+                if (imageFile) {
+                    const storage = getStorage();
+                    const storageRef = ref(storage, `images/${Email}.jpg`);
+                    await uploadBytes(storageRef, imageFile);
+                    const imageUrl = await getDownloadURL(storageRef);
+                    setCharacterOne(imageUrl);
+                    toast.success("Image saved successfully!", { position: "top-right", autoClose: 3000 });
+                }
+    
+                toast.success("Successfully registered!", { position: "top-right", autoClose: 5000 });
+                setLoading(false);
             }
         } catch (error) {
-            toast.info(error, { position: "top-center", autoClose: 5000 });
-            setLoading(false)
+            toast.info(error.message, { position: "top-center", autoClose: 5000 });
+            setLoading(false);
         }
     };
+    
+    
 
 
 
@@ -309,7 +329,7 @@ function StudentRegistration() {
                                     <input className='w-full bg-gray-300 rounded-xl px-4 focus:outline-none text-xl py-1' required value={Email} onChange={(e) => setEmail(e.target.value)} type='text' />
                                 </div>
                                 <div className='w-full'>
-                                    <div className='ml-4 text-2xl flex'>Phone no.<h1 className='text-red-600 ml-1'>*</h1></div>
+                                    <div className='ml-4 text-2xl flex'>Phone no.</div>
 
                                     <input
                                         type="tel"
@@ -321,7 +341,6 @@ function StudentRegistration() {
 
                                         maxLength={11}
                                         placeholder="Enter 11-digit phone number"
-                                        required
                                     />
                                 </div>
                             </div>
@@ -334,12 +353,12 @@ function StudentRegistration() {
                             <div className='mt-2 flex gap-5'>
                                 <div className='w-full'>
                                     <div className=' text-2xl flex'>Password<h1 className='text-red-600 ml-1'>*</h1></div>
-                                    <input className='w-full bg-gray-300 rounded-xl px-4 focus:outline-none text-xl py-1' onChange={(e) => setPasswords(e.target.value)} type='password' />
+                                    <input className='w-full bg-gray-300 rounded-xl px-4 focus:outline-none text-xl py-1' placeholder='Password must be at least 6 characters long' onChange={(e) => setPasswords(e.target.value)} type='password' />
                                 </div>
 
                                 <div className='w-full'>
                                     <div className='ml-4 flex text-2xl'>Confirm Password<h1 className='text-red-600 ml-1'>*</h1></div>
-                                    <input className='w-full bg-gray-300 rounded-xl px-4 focus:outline-none text-xl py-1' minLength={6} required onChange={(e) => setPassword(e.target.value)} type='password' />
+                                    <input className='w-full bg-gray-300 rounded-xl px-4 focus:outline-none text-xl py-1' placeholder='Password must be at least 6 characters long' minLength={6} required onChange={(e) => setPassword(e.target.value)} type='password' />
                                 </div>
                             </div>
                             <div className='mt-4 text-2xl'> Emergency Contact Information</div>
@@ -359,7 +378,7 @@ function StudentRegistration() {
                             </div>
                             <div className='mt-2 flex gap-5'>
                                 <div className='w-full'>
-                                    <div className=' text-2xl flex' required>Guardian's phone no.<h1 className='text-red-600 ml-1'>*</h1></div>
+                                    <div className=' text-2xl flex' required>Guardian's phone no.</div>
 
 
                                     <input
@@ -371,7 +390,6 @@ function StudentRegistration() {
                                         className="w-full bg-gray-300 rounded-xl px-4 focus:outline-none text-xl py-1"
                                         maxLength={11}
                                         placeholder="Enter 11-digit phone number"
-                                        required
                                     />
                                 </div>
                                 <div className='w-full'>

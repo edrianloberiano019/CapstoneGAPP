@@ -101,6 +101,9 @@ function StudentProgres() {
                             </button>
                         </div>
                     </div>
+                    <div className="w-full justify-center content-center items-center text-center">
+                        <div>Analytics here</div>
+                    </div>
                     <div className='mb-4 text-2xl flex justify-between mt-8 pb-1 px-4 border-b-2 border-gray-500'>
                         <div>Name</div>
                         <div className="flex gap-x-20 mr-12">
@@ -114,6 +117,7 @@ function StudentProgres() {
                         <div key={player.id} className='flex text-2xl mb-5 justify-between items-center px-4 pr-6'>
                             <div>{player.firstName} {player.lastName}</div>
                             <div className="flex gap-x-10 items-center">
+                                <button className="h-full px-5 text-xl text-white rounded-md drop-shadow-md hover:bg-green-950 bg-green-700 py-1">See Analytics</button>
                                 <div className="flex flex-row items-center w-32">
                                     <ProgressBar progress={player.puzzleProgress || 0} />
                                     <span className="text-lg ml-3 text-gray-700">{Math.round(player.puzzleProgress || 0)}%</span>

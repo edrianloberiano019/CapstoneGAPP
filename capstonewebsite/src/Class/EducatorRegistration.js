@@ -14,7 +14,7 @@ function EducatorRegistration() {
     const [searchEmail, setSearchEmail] = useState("");
     const [FirstName, setFName] = useState("");
     const [LastName, setLName] = useState("");
-    const [MiddleName, setMName] = useState("NA");
+    const [MiddleName, setMName] = useState("--");
     const [Gender, setGender] = useState("Male");
     const [DateBirth, setDateBirth] = useState("");
     const [Email, setEmail] = useState("");
@@ -23,14 +23,14 @@ function EducatorRegistration() {
     const [Password, setPassword] = useState("");
     const [GFName, setGFName] = useState("");
     const [GLName, setGLName] = useState("");
-    const [GMName, setGMName] = useState("NA");
+    const [GMName, setGMName] = useState("--");
     const [GPhone, setGPhone] = useState("");
     const [GEmail, setGEmail] = useState("");
-    const [GLandline, setGLandline] = useState("NA")
-    const [telephone, setTelephone] = useState('');
+    const [GLandline, setGLandline] = useState("--")
+    const [telephone, setTelephone] = useState('--');
     const [status] = useState("educator");
     const [password, setPasswords] = useState('')
-    const [Gtelephone, setTelephone2] = useState('');
+    const [Gtelephone, setTelephone2] = useState('--');
     const [characterOne, setCharacterOne] = useState(DefaultImage);
     const [imageFile, setImageFile] = useState(null);
     const [userFound, setUserFound] = useState(false);
@@ -105,23 +105,39 @@ function EducatorRegistration() {
 
     const educatorRegister = async (e) => {
         e.preventDefault();
-        setLoading(true)
+        setLoading(true);
         try {
-            if (!imageFile && !characterOne) {
-                toast.error("Please upload an image before saving.", { position: "top-center", autoClose: 5000 });
-                setLoading(false)
-
+            const today = new Date();
+            const dob = new Date(DateBirth);
+            const age = today.getFullYear() - dob.getFullYear();
+            const monthDiff = today.getMonth() - dob.getMonth();
+            const dayDiff = today.getDate() - dob.getDate();
+            
+            if (
+                dob > today ||
+                age < 10 ||
+                (age === 10 && (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0))) 
+            ) {
+                toast.error("Invalid date of birth. The educator must be at least 10 years old.", { position: "top-center", autoClose: 5000 });
+                setLoading(false);
                 return;
             }
-
+    
+            // Ensure image is uploaded
+            if (!imageFile && !characterOne) {
+                toast.error("Please upload an image before saving.", { position: "top-center", autoClose: 5000 });
+                setLoading(false);
+                return;
+            }
+    
+            // Update or create user logic
             if (userFound) {
                 if (password !== Password) {
                     toast.error("The passwords do not match.", { position: "top-center", autoClose: 5000 });
-                    setLoading(false)
-
+                    setLoading(false);
                     return;
                 }
-
+    
                 const userDocRef = doc(db, "users", userId);
                 await updateDoc(userDocRef, {
                     firstName: FirstName,
@@ -140,24 +156,22 @@ function EducatorRegistration() {
                         guardianMiddleName: GMName,
                         guardianPhone: GPhone,
                         guardianEmail: GEmail,
-                        guardianLandline: GLandline
-                    }
-                    
+                        guardianLandline: GLandline,
+                    },
                 });
-
+    
                 if (imageFile) {
                     const storage = getStorage();
                     const storageRef = ref(storage, `images/${Email}.jpg`);
                     await uploadBytes(storageRef, imageFile);
                     const imageUrl = await getDownloadURL(storageRef);
                     setCharacterOne(imageUrl);
-                    toast.success('Image updated successfully!', { position: "top-right", autoClose: 3000 });
+                    toast.success("Image updated successfully!", { position: "top-right", autoClose: 3000 });
                 }
-
+    
                 toast.success("User information updated successfully!", { position: "top-right", autoClose: 5000 });
                 setUserFound(false);
-                setLoading(false)
-
+                setLoading(false);
             } else {
                 if (password !== Password) {
                     toast.error("The passwords do not match.", { position: "top-right", autoClose: 5000 });
@@ -184,28 +198,29 @@ function EducatorRegistration() {
                             guardianMiddleName: GMName,
                             guardianPhone: GPhone,
                             guardianEmail: GEmail,
-                            guardianLandline: GLandline
-                        }
+                            guardianLandline: GLandline,
+                        },
                     });
-
+    
                     if (imageFile) {
                         const storage = getStorage();
                         const storageRef = ref(storage, `images/${Email}.jpg`);
                         await uploadBytes(storageRef, imageFile);
                         const imageUrl = await getDownloadURL(storageRef);
                         setCharacterOne(imageUrl);
-                        toast.success('Image saved successfully!', { position: "top-right", autoClose: 3000, delay: 200 });
+                        toast.success("Image saved successfully!", { position: "top-right", autoClose: 3000, delay: 200 });
                     }
-
+    
                     toast.success("Successfully registered!", { position: "top-right", autoClose: 5000 });
-                    setLoading(false)
+                    setLoading(false);
                 }
             }
         } catch (error) {
-            toast.info('The image is set to default.', { position: "top-center", autoClose: 5000 });
-            setLoading(false)
+            toast.info("The image is set to default.", { position: "top-center", autoClose: 5000 });
+            setLoading(false);
         }
     };
+    
 
     const appStyle = {
         backgroundImage: `url(${backgroundImage})`,
@@ -320,7 +335,6 @@ function EducatorRegistration() {
                                         className="w-full bg-gray-300 rounded-xl px-4 focus:outline-none text-xl py-1"
                                         maxLength={11}
                                         placeholder="Enter 11-digit phone number"
-                                        required
                                     />
                                 </div>
                             </div>
@@ -368,7 +382,6 @@ function EducatorRegistration() {
                                         className="w-full bg-gray-300 rounded-xl px-4 focus:outline-none text-xl py-1"
                                         maxLength={11}
                                         placeholder="Enter 11-digit phone number"
-                                        required
                                     />
                                 </div>
                                 <div className='w-full'>
