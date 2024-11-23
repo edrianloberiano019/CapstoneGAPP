@@ -1,19 +1,31 @@
 import React, { useEffect, useState } from "react";
-import backgroundImage from '../images/bg.jpg';
 import { motion } from 'framer-motion';
 import ProgressBar from '../Class/ProgressBar';
 import { db } from '../firebase';
 import { collection, getDocs, where, query } from "firebase/firestore";
 import Loading from "./Loading";
-import * as XLSX from "xlsx"; // Import xlsx
+import * as XLSX from "xlsx";
+import { Bar } from 'react-chartjs-2';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 function StudentProgres() {
     const [players, setPlayers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
+    const [openDropdown2, setOpenDropdown2] = useState("");
+
+    const toggleDropdown2 = (dropdown) => {
+        if (openDropdown2 === dropdown) {
+            setOpenDropdown2("");
+        } else {
+            setOpenDropdown2(dropdown);
+        }
+    };
 
     const appStyle = {
-        backgroundImage: `url(${backgroundImage})`,
+        backgroundImage: `url('../images/bg.jpg')`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
     };
@@ -31,8 +43,9 @@ function StudentProgres() {
                     return {
                         id: doc.id,
                         ...data,
-                        puzzleProgress: (data.puzzleScore / 200),
-                        crosswordProgress: (data.crosswordScore / 200) * 100,
+                        puzzleScore: data.puzzleScore || 0,
+                        crosswordScore: data.crosswordScore || 0,
+                        journalProgress: data.journalProgress || 0,
                     };
                 });
 
@@ -54,9 +67,9 @@ function StudentProgres() {
     const handleDownload = () => {
         const exportData = filteredPlayers.map(player => ({
             Name: `${player.firstName} ${player.lastName}`,
-            Puzzle: `${Math.round(player.puzzleProgress * 100)}%`,
-            Crossword: `${Math.round(player.crosswordProgress)}%`,
-            Journal: `${Math.round(player.journalProgress || 0)}%`,
+            Puzzle: `${player.puzzleScore}`,
+            Crossword: `${player.crosswordScore}`,
+            Journal: `${player.journalProgress}`,
         }));
 
         const ws = XLSX.utils.json_to_sheet(exportData);
@@ -64,6 +77,31 @@ function StudentProgres() {
         XLSX.utils.book_append_sheet(wb, ws, "Student Progress");
 
         XLSX.writeFile(wb, "student_progress.xlsx");
+    };
+
+    const totalPuzzleScore = players.reduce((total, player) => total + player.puzzleScore, 0);
+    const totalCrosswordScore = players.reduce((total, player) => total + player.crosswordScore, 0);
+    const totalJournalProgress = players.reduce((total, player) => total + player.journalProgress, 0);
+
+    const goal = 4000;
+
+    const puzzleProgress = Math.min((totalPuzzleScore / goal) * 100, 100);
+    const crosswordProgress = Math.min((totalCrosswordScore / goal) * 100, 100);
+    const journalProgress = Math.min((totalJournalProgress / goal) * 100, 100);
+
+    const chartData = {
+        labels: ['Puzzle', 'Crossword', 'Journal'],
+        datasets: [
+            {
+                label: 'Total Progress',
+                data: [totalPuzzleScore, totalCrosswordScore, totalJournalProgress],
+                backgroundColor: [
+                    'rgba(54, 162, 235, 0.6)',
+                    'rgba(255, 99, 132, 0.6)',
+                    'rgba(75, 192, 192, 0.6)',
+                ],
+            },
+        ],
     };
 
     if (loading) {
@@ -94,16 +132,41 @@ function StudentProgres() {
                                     </svg>
                                 </button>
                             </div>
-                            <button 
-                                onClick={handleDownload} 
+                            <button
+                                onClick={handleDownload}
                                 className='py-1 text-2xl px-3 duration-500 drop-shadow-md bg-green-500 rounded-lg hover:text-white hover:bg-green-700'>
                                 Download
                             </button>
                         </div>
                     </div>
-                    <div className="w-full justify-center content-center items-center text-center">
-                        <div>Analytics here</div>
+                    <div className="w-full mt-8">
+                        <Bar data={chartData} options={{
+                            responsive: true,
+                            scales: {
+                                x: {
+                                    beginAtZero: true,
+                                },
+                                y: {
+                                    beginAtZero: true,
+                                    max: goal,
+                                }
+                            },
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: 'Total Progress',
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function (tooltipItem) {
+                                            return `Score: ${tooltipItem.raw} / ${goal}`;
+                                        }
+                                    }
+                                }
+                            },
+                        }} />
                     </div>
+
                     <div className='mb-4 text-2xl flex justify-between mt-8 pb-1 px-4 border-b-2 border-gray-500'>
                         <div>Name</div>
                         <div className="flex gap-x-20 mr-12">
@@ -114,21 +177,21 @@ function StudentProgres() {
                     </div>
 
                     {filteredPlayers.map((player) => (
-                        <div key={player.id} className='flex text-2xl mb-5 justify-between items-center px-4 pr-6'>
-                            <div>{player.firstName} {player.lastName}</div>
+                        <div key={player.id} className='flex text-2xl mb-5 justify-between items-start px-4 pr-6'>
+                            <div className="flex items-center content-center">
+                                <div>{player.firstName} {player.lastName}</div>
+                                <div className="text-sm bg-gray-500 px-2 rounded-md ml-5 ">Novice</div>
+
+                            </div>
                             <div className="flex gap-x-10 items-center">
-                                <button className="h-full px-5 text-xl text-white rounded-md drop-shadow-md hover:bg-green-950 bg-green-700 py-1">See Analytics</button>
                                 <div className="flex flex-row items-center w-32">
-                                    <ProgressBar progress={player.puzzleProgress || 0} />
-                                    <span className="text-lg ml-3 text-gray-700">{Math.round(player.puzzleProgress || 0)}%</span>
+                                    <ProgressBar progress={player.puzzleScore / 10 || 0} />
                                 </div>
                                 <div className="flex flex-row items-center w-32">
-                                    <ProgressBar progress={player.crosswordProgress || 0} />
-                                    <span className="text-lg ml-3 text-gray-700">{Math.round(player.crosswordProgress || 0)}%</span>
+                                    <ProgressBar progress={player.crosswordScore / 10 || 0} />
                                 </div>
                                 <div className="flex flex-row items-center w-32">
                                     <ProgressBar progress={player.journalProgress || 0} />
-                                    <span className="text-lg ml-3 text-gray-700">{Math.round(player.journalProgress || 0)}%</span>
                                 </div>
                             </div>
                         </div>
