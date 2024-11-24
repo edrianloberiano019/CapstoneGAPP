@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { format, eachDayOfInterval, startOfMonth, endOfMonth, isSameDay, startOfWeek, addDays } from 'date-fns';
+import {
+  format,
+  eachDayOfInterval,
+  startOfMonth,
+  endOfMonth,
+  isSameDay,
+  startOfWeek,
+  addMonths,
+  subMonths,
+} from 'date-fns';
 import { db } from '../firebase';
 import { collection, doc, setDoc, getDocs, getDoc } from 'firebase/firestore';
 import Loading from './Loading';
@@ -14,26 +23,19 @@ function Calendar() {
   const [userRole, setUserRole] = useState(null);
   const [currentDate, setCurrentDate] = useState(new Date());
   const { currentUser } = useAuth();
+
   const today = new Date();
-  const monthStart = startOfMonth(today);
-  const monthEnd = endOfMonth(today);
+  const monthStart = startOfMonth(currentDate);
+  const monthEnd = endOfMonth(currentDate);
   const daysInMonth = eachDayOfInterval({ start: monthStart, end: monthEnd });
-  const options = { month: 'long'};
+  const options = { month: 'long', year: 'numeric' };
   const formattedMonth = currentDate.toLocaleDateString(undefined, options);
 
   // Add placeholders for days to align with a Sunday-start week
   const startPaddingDays = Array.from(
     { length: monthStart.getDay() },
-    (_, i) => addDays(startOfWeek(monthStart), i)
+    (_, i) => addMonths(monthStart, i)
   );
-
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      setCurrentDate(new Date());
-    }, 1000);
-
-    return () => clearInterval(intervalId);
-  }, []);
 
   useEffect(() => {
     const fetchUserRole = async () => {
@@ -50,12 +52,12 @@ function Calendar() {
         const eventsCollection = collection(db, 'events');
         const eventDocs = await getDocs(eventsCollection);
         const eventsMap = {};
-        eventDocs.forEach(doc => {
+        eventDocs.forEach((doc) => {
           eventsMap[doc.id] = doc.data().eventText;
         });
         setEvents(eventsMap);
       } catch (error) {
-        console.error("Error fetching events: ", error);
+        console.error('Error fetching events: ', error);
       } finally {
         setLoading(false);
       }
@@ -81,9 +83,14 @@ function Calendar() {
           setSelectedDate(null);
         })
         .catch((error) => {
-          console.error("Error adding event to Firestore: ", error);
+          console.error('Error adding event to Firestore: ', error);
         });
     }
+  };
+
+  const handleMonthChange = (event) => {
+    const [year, month] = event.target.value.split('-');
+    setCurrentDate(new Date(year, month - 1));
   };
 
   const formattedDate = format(selectedDate, 'dd');
@@ -92,14 +99,46 @@ function Calendar() {
     <div>
       {userRole === 'admin' ? (
         <div className="container mx-auto px-4 pb-4">
-          <h3 className="text-4xl mb-2 text-center uppercase">Calendar of {formattedMonth}</h3>
+          <h3 className="text-4xl mb-2 text-center uppercase">
+            Calendar of {formattedMonth}
+          </h3>
+          <div className="text-right mb-4">
+          
+            <select
+              onChange={handleMonthChange}
+              value={format(currentDate, 'yyyy-MM')}
+              className="border rounded px-4 py-2"
+            >
+              {Array.from({ length: 12 }, (_, i) => {
+                const date = addMonths(startOfMonth(new Date()), i);
+                return (
+                  <option
+                    key={i}
+                    value={format(date, 'yyyy-MM')}
+                  >
+                    {format(date, 'MMMM yyyy')}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
           {loading ? (
             <Loading />
           ) : (
             <div>
               <div className="grid grid-cols-7 gap-2">
-                {['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].map((day) => (
-                  <div key={day} className="text-center text-xl font-normal">{day}</div>
+                {[
+                  'Sunday',
+                  'Monday',
+                  'Tuesday',
+                  'Wednesday',
+                  'Thursday',
+                  'Friday',
+                  'Saturday',
+                ].map((day) => (
+                  <div key={day} className="text-center text-xl font-normal">
+                    {day}
+                  </div>
                 ))}
                 {startPaddingDays.map((_, index) => (
                   <div key={`padding-${index}`} />
@@ -113,11 +152,17 @@ function Calendar() {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.5, delay }}
-                      className={`p-2 rounded-md hover:shadow-2xl bg-green-500 transition-all cursor-pointer hover:bg-green-700 hover:text-white ${isSameDay(date, new Date()) ? 'bg-green-700 hover:animate-none text-white animate-pulse' : ''}`}
+                      className={`p-2 rounded-md hover:shadow-2xl bg-green-500 transition-all cursor-pointer hover:bg-green-700 hover:text-white ${
+                        isSameDay(date, new Date())
+                          ? 'bg-green-700 hover:animate-none text-white animate-pulse'
+                          : ''
+                      }`}
                       onClick={() => handleDateClick(date)}
                     >
                       <div className="text-2xl">{format(date, 'd')}</div>
-                      <div className='text-sm px-2 overflow-hidden h-[60px]'>{events[format(date, 'yyyy-MM-dd')]}</div>
+                      <div className="text-sm px-2 overflow-hidden h-[60px]">
+                        {events[format(date, 'yyyy-MM-dd')]}
+                      </div>
                     </motion.div>
                   );
                 })}
@@ -126,7 +171,9 @@ function Calendar() {
           )}
           {selectedDate && userRole === 'admin' && (
             <div>
-              <div className='mt-4 text-2xl ml-5'>Add event on {formattedDate}</div>
+              <div className="mt-4 text-2xl ml-5">
+                Add event on {formattedDate}
+              </div>
               <div className="my-1 text-lg w-full flex">
                 <input
                   type="text"
@@ -148,14 +195,26 @@ function Calendar() {
         </div>
       ) : (
         <div className="container mx-auto px-4 pb-4">
-          <h3 className="text-4xl mb-2 text-center uppercase">Calendar of {formattedMonth}</h3>
+          <h3 className="text-4xl mb-2 text-center uppercase">
+            Calendar of {formattedMonth}
+          </h3>
           {loading ? (
             <Loading />
           ) : (
             <div className="grid grid-cols-7 gap-2">
-            {['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].map((day) => (
-              <div key={day} className="text-center text-xl font-normal">{day}</div>
-            ))}
+              {[
+                'Sunday',
+                'Monday',
+                'Tuesday',
+                'Wednesday',
+                'Thursday',
+                'Friday',
+                'Saturday',
+              ].map((day) => (
+                <div key={day} className="text-center text-xl font-normal">
+                  {day}
+                </div>
+              ))}
               {startPaddingDays.map((_, index) => (
                 <div key={`padding-${index}`} />
               ))}
@@ -168,11 +227,17 @@ function Calendar() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay }}
-                    className={`p-2 rounded-md hover:shadow-2xl bg-green-500 transition-all hover:bg-green-700 hover:text-white ${isSameDay(date, new Date()) ? 'hover:animate-none bg-green-700 text-white animate-pulse' : ''}`}
+                    className={`p-2 rounded-md hover:shadow-2xl bg-green-500 transition-all hover:bg-green-700 hover:text-white ${
+                      isSameDay(date, new Date())
+                        ? 'hover:animate-none bg-green-700 text-white animate-pulse'
+                        : ''
+                    }`}
                     onClick={() => handleDateClick(date)}
                   >
                     <div className="text-2xl">{format(date, 'd')}</div>
-                    <div className='text-sm px-2 overflow-hidden h-[60px]'>{events[format(date, 'yyyy-MM-dd')]}</div>
+                    <div className="text-sm px-2 overflow-hidden h-[60px]">
+                      {events[format(date, 'yyyy-MM-dd')]}
+                    </div>
                   </motion.div>
                 );
               })}

@@ -324,7 +324,7 @@ function EducatorRegistration() {
                                     <input className='w-full bg-gray-300 rounded-xl px-4 focus:outline-none text-xl py-1' required onChange={(e) => setEmail(e.target.value)} type='text' />
                                 </div>
                                 <div className='w-full'>
-                                    <div className='ml-4 text-2xl flex'>Phone no.<h1 className='text-red-600 ml-1'>*</h1></div>
+                                    <div className='ml-4 text-2xl flex'>Phone no.</div>
 
                                     <input
                                         type="tel"
@@ -372,7 +372,7 @@ function EducatorRegistration() {
                             </div>
                             <div className='mt-2 flex gap-5'>
                                 <div className='w-full'>
-                                    <div className=' text-2xl flex' required>Guardian's phone no.<h1 className='text-red-600 ml-1'>*</h1></div>
+                                    <div className=' text-2xl flex' required>Guardian's phone no.   </div>
                                     <input
                                         type="tel"
                                         id="telephone"

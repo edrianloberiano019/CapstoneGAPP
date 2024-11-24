@@ -185,10 +185,10 @@ function StudentProgres() {
                             </div>
                             <div className="flex gap-x-10 items-center">
                                 <div className="flex flex-row items-center w-32">
-                                    <ProgressBar progress={player.puzzleScore / 10 || 0} />
+                                    <ProgressBar progress={player.puzzleScore / 100 || 0} />
                                 </div>
                                 <div className="flex flex-row items-center w-32">
-                                    <ProgressBar progress={player.crosswordScore / 10 || 0} />
+                                    <ProgressBar progress={player.crosswordScore / 100 || 0} />
                                 </div>
                                 <div className="flex flex-row items-center w-32">
                                     <ProgressBar progress={player.journalProgress || 0} />
