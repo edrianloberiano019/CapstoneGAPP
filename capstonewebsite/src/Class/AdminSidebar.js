@@ -67,6 +67,12 @@ function AdminSidebar({ setSelectedView }) {
                         >
                             Dashboard
                         </button>
+                        <button
+                            onClick={() => setSelectedView('shux')}
+                            className="block py-1.5 w-full text-left text-xl px-4 transition duration-200 hover:bg-[#bbd188]"
+                        >
+                            Data Analytics
+                        </button>
                         <div>
                             <button
                                 onClick={() => toggleDropdown2("students")}
@@ -139,6 +145,13 @@ function AdminSidebar({ setSelectedView }) {
                                 </button>
                             </div>
                         </div>
+
+                        <a
+                            href="/"
+                            className="block py-1.5 text-xl px-4 transition duration-200 hover:bg-[#bbd188]"
+                        >
+                            Game Settings
+                        </a>
                         <button onClick={() => setSelectedView('leaderboard')}
                             className="w-full text-xl text-left flex items-center justify-between py-1.5 px-4 transition duration-200 hover:bg-[#bbd188]"
                         >

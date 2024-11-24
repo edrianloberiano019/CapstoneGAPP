@@ -13,6 +13,7 @@ import { ModalBody } from "../Class/ModalBody";
 import { AuthProvider } from "../Class/authContext";
 import StudentProgres from "../Class/StudentProgres";
 import backgroundImage from "../images/bgforweb.png"
+import DataAnalysis from "../Class/DataAnalysis";
 
 const AdminDashboard = () => {
   const [selectedView, setSelectedView] = useState('home');
@@ -57,6 +58,7 @@ const AdminDashboard = () => {
               {selectedView === 'bg' && <h1 className="text-3xl w-full overflow-hidden"></h1>}
               {selectedView === 'users' && <h1 className="text-3xl"><ModalBody /></h1>}
               {selectedView === 'sp' && <h1 className="text-3xl w-full"><StudentProgres /></h1>}
+              {selectedView === 'shux' && <h1 className="text-3xl w-full"><DataAnalysis /></h1>}
             </div>
           </div>
         </div>
