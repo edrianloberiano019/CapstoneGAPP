@@ -99,22 +99,22 @@ function RegisteredEducators() {
                                                 {user.firstName} {user.lastName}
                                             </div>
                                             <div className='w-[10%] text-2xl overflow-hidden text-ellipsis'>
-                                                {user.gender}
+                                                {user.gender || 'N/A'}
                                             </div>
                                             <div className='w-[35%] text-2xl overflow-hidden text-ellipsis'>
-                                                {user.address}
+                                                {user.address || 'N/A'}
                                             </div>
                                             <div className='w-[15%] text-2xl overflow-hidden text-ellipsis'>
-                                                {user.phone}
+                                                {user.phone || 'N/A'}
                                             </div>
                                             <div className='w-[20%] text-2xl overflow-hidden text-ellipsis'>
-                                                {user.emergencyContact.guardianFirstName} {user.emergencyContact.guardianLastName}
+                                                {user.emergencyContact?.guardianFirstName || 'N/A'} {user.emergencyContact?.guardianLastName || ''}
                                             </div>
                                             <div className='w-[20%] text-2xl overflow-hidden text-ellipsis'>
-                                                {user.emergencyContact.guardianPhone}
+                                                {user.emergencyContact?.guardianPhone || 'N/A'}
                                             </div>
                                             <div className='w-[20%] text-2xl overflow-hidden text-ellipsis'>
-                                                {user.password}
+                                                {user.password || 'N/A'}
                                             </div>
                                         </li>
                                     ))}
